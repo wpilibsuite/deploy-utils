@@ -42,7 +42,8 @@ class DefaultDirectoryTree extends AbstractDirectoryTree {
                 if (lTree instanceof FileSystemMirroringFileTree)
                     dirTree = (lTree as FileSystemMirroringFileTree).mirror
                 else
-                    dirTree = (lTree as LocalFileTree).getLocalContents().first()
+                    throw new Exception("Unknown method")
+                    //dirTree = (lTree as LocalFileTree).getLocalContents().first()
                 rootDir = dirTree.dir
             } else if (tree instanceof FileCollection) {
                 tree = ((FileCollection)tree).files
