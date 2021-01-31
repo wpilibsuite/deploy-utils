@@ -1,13 +1,13 @@
 package jaci.gradle.deploy.artifact
 
 import groovy.transform.CompileStatic
-import jaci.gradle.Resolver
+import edu.wpi.first.embeddedtools.Resolver
 import jaci.gradle.deploy.cache.CacheMethod
 import jaci.gradle.deploy.context.DeployContext
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
-import jaci.gradle.ActionWrapper
+import edu.wpi.first.embeddedtools.ActionWrapper
 
 import javax.inject.Inject
 

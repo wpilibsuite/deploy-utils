@@ -1,7 +1,7 @@
 package jaci.gradle.deploy.artifact
 
 import org.gradle.api.Action
-import jaci.gradle.ActionWrapper
+import edu.wpi.first.embeddedtools.ActionWrapper
 import groovy.transform.CompileStatic
 import groovy.transform.InheritConstructors
 

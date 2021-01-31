@@ -3,7 +3,7 @@ package jaci.gradle.deploy.artifact
 import groovy.transform.CompileStatic
 import org.gradle.api.Action
 import jaci.gradle.deploy.context.DeployContext
-import jaci.gradle.PredicateWrapper
+import edu.wpi.first.embeddedtools.PredicateWrapper
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.internal.DefaultDomainObjectSet

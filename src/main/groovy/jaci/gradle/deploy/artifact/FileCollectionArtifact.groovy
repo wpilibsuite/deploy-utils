@@ -1,7 +1,7 @@
 package jaci.gradle.deploy.artifact
 
 import groovy.transform.CompileStatic
-import jaci.gradle.Resolver
+import edu.wpi.first.embeddedtools.Resolver
 import jaci.gradle.deploy.cache.CacheMethod
 import jaci.gradle.deploy.context.DeployContext
 import org.gradle.api.Project

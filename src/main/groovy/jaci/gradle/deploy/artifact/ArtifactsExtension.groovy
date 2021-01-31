@@ -2,7 +2,7 @@ package jaci.gradle.deploy.artifact
 
 import groovy.transform.CompileStatic
 import org.gradle.api.Action
-import jaci.gradle.Resolver
+import edu.wpi.first.embeddedtools.Resolver
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.internal.DefaultNamedDomainObjectSet
