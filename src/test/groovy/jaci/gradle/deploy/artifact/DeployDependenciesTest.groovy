@@ -18,7 +18,7 @@ class DeployDependenciesTest extends Specification {
         given:
         buildFile << """
 plugins {
-    id 'jaci.gradle.EmbeddedTools'
+    id 'edu.wpi.first.EmbeddedTools'
 }
 
 deploy {
@@ -62,7 +62,7 @@ deploy {
         given:
         buildFile << """
 plugins {
-    id 'jaci.gradle.EmbeddedTools'
+    id 'edu.wpi.first.EmbeddedTools'
 }
 
 deploy {

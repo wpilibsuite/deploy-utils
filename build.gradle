@@ -30,48 +30,26 @@ buildScan {
     termsOfServiceAgree = 'yes'
 }
 
-group = "jaci.gradle"
+group = "edu.wpi.first"
 archivesBaseName = "EmbeddedTools"
 version = "2020.12.23" // YYYY.MM.DD(revision)
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 
 pluginBundle {
-    website = 'https://github.com/JacisNonsense/EmbeddedTools'
-    vcsUrl = 'https://github.com/JacisNonsense/EmbeddedTools'
+    website = 'https://github.com/wpilibsuite/EmbeddedTools'
+    vcsUrl = 'https://github.com/wpilibsuite/EmbeddedTools'
     description = 'Additions to the model-based DSL for deploying Java and Native projects to remote targets'
     tags = ['remote', 'target', 'deploy', 'java', 'native']
-
-//    plugins {
-//        embeddedTools {
-//            id = "${project.group}.${project.archivesBaseName}"
-//            displayName = 'EmbeddedTools'
-//        }
-//    }
 }
-
-//publishing {
-//    publications {
-//        plugin(MavenPublication) {
-//            artifact(jar) {
-//                artifactId 'EmbeddedTools'
-//                if (project.hasProperty('localPublish')) {
-//                    classifier null
-//                    groupId 'gradle.plugin.' + group
-//                    artifactId 'EmbeddedTools'
-//                }
-//            }
-//        }
-//    }
-//}
 
 gradlePlugin {
     plugins {
-        gradleRio {
-            id = 'jaci.gradle.EmbeddedTools'
+        embeddedTools {
+            id = 'edu.wpi.first.EmbeddedTools'
             displayName = 'EmbeddedTools'
-            implementationClass = 'jaci.gradle.EmbeddedTools'
+            implementationClass = 'edu.wpi.first.embeddedtools.EmbeddedTools'
         }
     }
 }

@@ -1,7 +1,7 @@
 package jaci.gradle.deploy.target
 
 import groovy.transform.CompileStatic
-import jaci.gradle.EmbeddedTools
+import edu.wpi.first.embeddedtools.EmbeddedTools
 import jaci.gradle.deploy.context.DeployContext
 import jaci.gradle.deploy.target.discovery.TargetDiscoveryTask
 import jaci.gradle.deploy.target.location.DeployLocation

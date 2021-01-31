@@ -1,7 +1,7 @@
 package jaci.gradle.nativedeps
 
 import groovy.transform.CompileStatic
-import jaci.gradle.EmbeddedTools
+import edu.wpi.first.embeddedtools.EmbeddedTools
 import jaci.gradle.SortUtils
 import jaci.gradle.files.FileTreeSupplier
 import jaci.gradle.files.DefaultDirectoryTree
