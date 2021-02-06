@@ -35,7 +35,7 @@ public class ToolchainsPlugin implements Plugin<Project> {
 
     }
 
-    static class ToolchainUtilExtension {
+    public static class ToolchainUtilExtension {
         private boolean skipBinaryToolchainMissingWarning = false;
 
         public boolean getSkipBinaryToolchainMissingWarning() {
@@ -55,7 +55,7 @@ public class ToolchainsPlugin implements Plugin<Project> {
         }
     }
 
-    static class ToolchainRules extends RuleSource {
+    public static class ToolchainRules extends RuleSource {
         static final Map<String, ToolType> LANG_TOOLS_MAP = Map.of(
             "cpp", ToolType.CPP_COMPILER,
             "c", ToolType.C_COMPILER,

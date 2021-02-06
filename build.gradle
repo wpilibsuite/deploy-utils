@@ -33,7 +33,7 @@ buildScan {
 
 group = "edu.wpi.first"
 archivesBaseName = "EmbeddedTools"
-version = "2020.12.23" // YYYY.MM.DD(revision)
+version = "2021.02.06" // YYYY.MM.DD(revision)
 
 sourceCompatibility = 11
 targetCompatibility = 11

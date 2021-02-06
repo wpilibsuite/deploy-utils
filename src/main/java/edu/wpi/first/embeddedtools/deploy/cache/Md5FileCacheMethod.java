@@ -24,7 +24,7 @@ public class Md5FileCacheMethod extends AbstractCacheMethod {
     private Logger log = Logger.getLogger(Md5SumCacheMethod.class);
     private int csI = 0;
     private Gson gson = new Gson();
-    Type mapType = new TypeToken<Map<String, String>>(){}.getType();
+    private Type mapType = new TypeToken<Map<String, String>>(){}.getType();
 
     @Inject
     public Md5FileCacheMethod(String name) {

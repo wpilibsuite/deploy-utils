@@ -12,7 +12,7 @@ import edu.wpi.first.embeddedtools.deploy.cache.CacheMethod;
 import edu.wpi.first.embeddedtools.deploy.context.DeployContext;
 import edu.wpi.first.embeddedtools.log.ETLogger;
 
-class FileArtifact extends AbstractArtifact implements CacheableArtifact {
+public class FileArtifact extends AbstractArtifact implements CacheableArtifact {
 
     @Inject
     public FileArtifact(String name, Project project) {
