@@ -3,10 +3,10 @@ package edu.wpi.first.embeddedtools
 import com.jcraft.jsch.JSch
 import groovy.transform.Canonical
 import groovy.transform.CompileStatic
-import jaci.gradle.deploy.DeployPlugin
-import jaci.gradle.log.ETLoggerFactory
-import jaci.gradle.nativedeps.NativeDepsPlugin
-import jaci.gradle.toolchains.ToolchainsPlugin
+import edu.wpi.first.embeddedtools.deploy.DeployPlugin
+import edu.wpi.first.embeddedtools.log.ETLoggerFactory
+import edu.wpi.first.embeddedtools.nativedeps.NativeDepsPlugin
+import edu.wpi.first.embeddedtools.toolchains.ToolchainsPlugin
 import org.apache.log4j.Logger
 import org.gradle.api.Plugin
 import org.gradle.api.Project

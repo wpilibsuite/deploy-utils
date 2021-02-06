@@ -27,8 +27,8 @@ See [https://plugins.gradle.org/plugin/jaci.gradle.EmbeddedTools](https://plugin
 ## Spec
 
 ```gradle
-import jaci.gradle.toolchains.*
-import jaci.gradle.nativedeps.*
+import edu.wpi.first.embeddedtools.toolchains.*
+import edu.wpi.first.embeddedtools.nativedeps.*
 
 // DSL (all properties optional unless stated as required)
 deploy {

@@ -8,8 +8,8 @@ import org.gradle.api.Project
 import org.gradle.nativeplatform.NativeBinarySpec
 import org.gradle.platform.base.VariantComponentSpec
 
-import jaci.gradle.nativedeps.DelegatedDependencySet
-import jaci.gradle.nativedeps.DependencySpecExtension
+import edu.wpi.first.embeddedtools.nativedeps.DelegatedDependencySet
+import edu.wpi.first.embeddedtools.nativedeps.DependencySpecExtension
 
 @CompileStatic
 class EmbeddedToolsExtension {

@@ -18,10 +18,10 @@ apply plugin: "cpp"
 apply plugin: "c"
 apply plugin: "jaci.gradle.EmbeddedTools"
 
-import jaci.gradle.deploy.*
-import jaci.gradle.nativedeps.CombinedNativeLib
-import jaci.gradle.nativedeps.NativeLib
-import jaci.gradle.toolchains.*
+import edu.wpi.first.embeddedtools.deploy.*
+import edu.wpi.first.embeddedtools.nativedeps.CombinedNativeLib
+import edu.wpi.first.embeddedtools.nativedeps.NativeLib
+import edu.wpi.first.embeddedtools.toolchains.*
 
 repositories.maven { repo ->
     repo.name = "WPI"
