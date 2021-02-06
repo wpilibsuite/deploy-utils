@@ -15,7 +15,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-class BinaryLibraryArtifact extends AbstractArtifact implements CacheableArtifact {
+public class BinaryLibraryArtifact extends AbstractArtifact implements CacheableArtifact {
     private Set<File> files;
     private boolean doDeploy = false;
 
@@ -35,6 +35,14 @@ class BinaryLibraryArtifact extends AbstractArtifact implements CacheableArtifac
                 doDeploy = true;
             }
         });
+    }
+
+    public NativeBinarySpec getBinary() {
+        return binary;
+    }
+
+    public void setBinary(NativeBinarySpec binary) {
+        this.binary = binary;
     }
 
     public boolean isDoDeploy() {
