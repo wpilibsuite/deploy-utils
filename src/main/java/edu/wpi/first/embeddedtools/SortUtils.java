@@ -39,10 +39,10 @@ public class SortUtils {
         }
     }
 
-    public static <T> List<TopoMember<T>> topoSort(List<TopoMember<T>> members) {
+    public static <T> List<T> topoSort(List<TopoMember<T>> members) {
 
         List<TopoMember<T>> unmarked = new ArrayList<>(members);
-        List<TopoMember<T>> sorted = new ArrayList<>(unmarked.size());
+        List<T> sorted = new ArrayList<>(unmarked.size());
         while (true) {
             boolean found = false;
             for (TopoMember<T> member : unmarked) {
@@ -60,7 +60,7 @@ public class SortUtils {
         return sorted;
     }
 
-    private static <T> void visit(TopoMember<T> member, List<TopoMember<T>> members, List<TopoMember<T>> sorted) {
+    private static <T> void visit(TopoMember<T> member, List<TopoMember<T>> members, List<T> sorted) {
         if (member.mark == 1) throw new CyclicDependencyException(member); // Temp mark
         if (member.mark == 2) return; // Perm mark
         member.mark = 1;
@@ -73,6 +73,6 @@ public class SortUtils {
             }
         }
         member.mark = 2;
-        sorted.add(member);
+        sorted.add(member.extra);
     }
 }

@@ -11,8 +11,8 @@ import org.gradle.nativeplatform.NativeBinarySpec;
 import org.gradle.nativeplatform.platform.NativePlatform;
 
 public class DependencySpecExtension {
-    List<ETNativeDepSet> sets;
-    final Project project;
+    private List<ETNativeDepSet> sets;
+    private final Project project;
 
     public List<ETNativeDepSet> getSets() {
         return sets;

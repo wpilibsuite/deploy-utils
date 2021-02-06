@@ -4,10 +4,10 @@ import spock.lang.Specification
 
 class SortUtilsTest extends Specification {
 
-    def memberA = new SortUtils.TopoMember(name: "A")
-    def memberB = new SortUtils.TopoMember(name: "B", dependsOn: ["A"])
-    def memberC = new SortUtils.TopoMember(name: "C")
-    def memberD = new SortUtils.TopoMember(name: "D", dependsOn: ["B", "C"])
+    def memberA = new SortUtils.TopoMember(name: "A", extra: 1)
+    def memberB = new SortUtils.TopoMember(name: "B", dependsOn: ["A"], extra: 2)
+    def memberC = new SortUtils.TopoMember(name: "C", extra: 3)
+    def memberD = new SortUtils.TopoMember(name: "D", dependsOn: ["B", "C"], extra: 4)
 
     def allMembers = [ memberA, memberB, memberC, memberD ]
 
@@ -16,9 +16,9 @@ class SortUtilsTest extends Specification {
         def sorted = SortUtils.topoSort(allMembers)
 
         then:
-        sorted.indexOf(memberA) < sorted.indexOf(memberB)
-        sorted.indexOf(memberB) < sorted.indexOf(memberD)
-        sorted.indexOf(memberC) < sorted.indexOf(memberD)
+        sorted.indexOf(memberA.extra) < sorted.indexOf(memberB.extra)
+        sorted.indexOf(memberB.extra) < sorted.indexOf(memberD.extra)
+        sorted.indexOf(memberC.extra) < sorted.indexOf(memberD.extra)
     }
 
     def "cyclic"() {

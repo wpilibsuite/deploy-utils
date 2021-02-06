@@ -13,6 +13,7 @@ import edu.wpi.first.embeddedtools.deploy.context.DeployContext;
 import groovy.lang.Closure;
 import groovy.lang.GString;
 import edu.wpi.first.embeddedtools.ClosureUtils;
+import edu.wpi.first.embeddedtools.EmbeddedTools;
 
 public class CacheExtension extends DefaultNamedDomainObjectSet<CacheMethod> implements Resolver<CacheMethod> {
 
@@ -44,7 +45,7 @@ public class CacheExtension extends DefaultNamedDomainObjectSet<CacheMethod> imp
     }
 
     public CacheMethod resolve(Object cache) {
-        if (project.hasProperty("deploy-dirty")) {
+        if (EmbeddedTools.isSkipCache(project)) {
             return null;
         } else if (cache == null || (cache instanceof Boolean && !(Boolean)cache)) {
             return null;

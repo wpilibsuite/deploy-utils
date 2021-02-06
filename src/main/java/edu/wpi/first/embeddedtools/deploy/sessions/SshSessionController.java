@@ -8,13 +8,13 @@ import java.util.Properties;
 
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 import org.codehaus.groovy.runtime.IOGroovyMethods;
 
+import edu.wpi.first.embeddedtools.EmbeddedTools;
 import edu.wpi.first.embeddedtools.deploy.CommandDeployResult;
 
 public class SshSessionController extends AbstractSessionController implements IPSessionController {
@@ -23,14 +23,6 @@ public class SshSessionController extends AbstractSessionController implements I
     private String host, user;
     private int port, timeout;
 
-    static JSch jsch;
-
-    static JSch getJsch() {
-        if (jsch == null)
-            jsch = new JSch();
-        return jsch;
-    }
-
     public SshSessionController(String host, int port, String user, String password, int timeout, int maxConcurrent) {
         super(maxConcurrent);
         this.host = host;
@@ -38,9 +30,8 @@ public class SshSessionController extends AbstractSessionController implements I
         this.user = user;
         this.timeout = timeout;
 
-        // TODO MAKE THIS USE COPY in EmbeddedTools
         try {
-            this.session = jsch.getSession(user, host, port);
+            this.session = EmbeddedTools.getJsch().getSession(user, host, port);
         } catch (JSchException e) {
             throw new RuntimeException(e);
         }

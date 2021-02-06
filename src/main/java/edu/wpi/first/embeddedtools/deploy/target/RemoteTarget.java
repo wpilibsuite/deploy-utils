@@ -11,6 +11,7 @@ import org.gradle.api.Named;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskCollection;
 
+import edu.wpi.first.embeddedtools.EmbeddedTools;
 import edu.wpi.first.embeddedtools.deploy.context.DeployContext;
 import edu.wpi.first.embeddedtools.deploy.target.discovery.TargetDiscoveryTask;
 import edu.wpi.first.embeddedtools.deploy.target.location.DeployLocation;
@@ -25,7 +26,7 @@ public class RemoteTarget implements Named {
     public RemoteTarget(String name, Project project) {
         this.name = name;
         this.project = project;
-        this.dry = project.hasProperty("deploy-dry");
+        this.dry = EmbeddedTools.isDryRun(project);
         locations = project.getObjects().newInstance(DeployLocationSet.class, project, this);
         log = Logger.getLogger(toString());
     }
