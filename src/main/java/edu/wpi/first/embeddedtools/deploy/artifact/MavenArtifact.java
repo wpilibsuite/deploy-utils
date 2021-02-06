@@ -12,7 +12,7 @@ import org.gradle.api.artifacts.Dependency;
 import edu.wpi.first.embeddedtools.deploy.context.DeployContext;
 import edu.wpi.first.embeddedtools.log.ETLogger;
 
-class MavenArtifact extends FileArtifact {
+public class MavenArtifact extends FileArtifact {
 
     private Set<File> deployFiles;
 

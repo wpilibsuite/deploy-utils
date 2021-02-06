@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import javax.inject.Inject;
 
-class JavaArtifact extends FileArtifact implements TaskHungryArtifact {
+public class JavaArtifact extends FileArtifact implements TaskHungryArtifact {
 
     @Inject
     public JavaArtifact(String name, Project project) {

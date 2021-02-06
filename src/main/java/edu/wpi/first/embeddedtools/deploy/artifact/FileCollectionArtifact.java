@@ -11,7 +11,7 @@ import org.gradle.api.provider.Property;
 
 import javax.inject.Inject;
 
-class FileCollectionArtifact extends AbstractArtifact implements CacheableArtifact {
+public class FileCollectionArtifact extends AbstractArtifact implements CacheableArtifact {
 
     @Inject
     public FileCollectionArtifact(String name, Project project) {

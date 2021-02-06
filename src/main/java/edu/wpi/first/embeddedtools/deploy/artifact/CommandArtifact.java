@@ -7,7 +7,7 @@ import org.gradle.api.Project;
 import edu.wpi.first.embeddedtools.deploy.CommandDeployResult;
 import edu.wpi.first.embeddedtools.deploy.context.DeployContext;
 
-class CommandArtifact extends AbstractArtifact {
+public class CommandArtifact extends AbstractArtifact {
 
     String command = null;
     CommandDeployResult result = null;

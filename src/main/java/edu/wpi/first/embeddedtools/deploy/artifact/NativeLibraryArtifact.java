@@ -12,7 +12,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-class NativeLibraryArtifact extends FileCollectionArtifact {
+public class NativeLibraryArtifact extends FileCollectionArtifact {
 
     @Inject
     public NativeLibraryArtifact(String name, Project project) {
