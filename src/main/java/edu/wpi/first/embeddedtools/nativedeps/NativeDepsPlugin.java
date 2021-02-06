@@ -241,23 +241,29 @@ public class NativeDepsPlugin implements Plugin<Project> {
             );
         }
 
+        private static <T> List<T> nullArrayList(Class<T> cls) {
+            List<T> list = new ArrayList<>();
+            list.add(null);
+            return list;
+        }
+
         private static Iterable<Flavor> getFlavors(BaseLibSpec lib, final FlavorContainer flavors) {
             if (lib.getFlavor() == null && (lib.getFlavors() == null || lib.getFlavors().isEmpty()))
-                return () -> List.of((Flavor)null).iterator();
+                return () -> nullArrayList(Flavor.class).iterator();
             List<String> fl = lib.getFlavors() == null ? List.of(lib.getFlavor()) : lib.getFlavors();
             return () -> fl.stream().map(x -> flavors.findByName(x)).filter(x -> x != null).iterator();
         }
 
         private static Iterable<BuildType> getBuildTypes(BaseLibSpec lib, final BuildTypeContainer buildTypes) {
             if (lib.getBuildType() == null && (lib.getBuildTypes() == null || lib.getBuildTypes().isEmpty()))
-                return () -> List.of((BuildType)null).iterator();
+                return () -> nullArrayList(BuildType.class).iterator();
             List<String> fl = lib.getBuildTypes() == null ? List.of(lib.getBuildType()) : lib.getBuildTypes();
             return () -> fl.stream().map(x -> buildTypes.findByName(x)).filter(x -> x != null).iterator();
         }
 
         private static Iterable<NativePlatform> getPlatforms(BaseLibSpec lib, final PlatformContainer platforms) {
             if (lib.getTargetPlatform() == null && (lib.getTargetPlatforms() == null || lib.getTargetPlatforms().isEmpty()))
-                return () -> List.of((NativePlatform)null).iterator();
+                return () -> nullArrayList(NativePlatform.class).iterator();
             List<String> fl = lib.getTargetPlatforms() == null ? List.of(lib.getTargetPlatform()) : lib.getTargetPlatforms();
             return () -> fl.stream().map(x -> (NativePlatform)platforms.findByName(x)).filter(x -> x != null).iterator();
         }
