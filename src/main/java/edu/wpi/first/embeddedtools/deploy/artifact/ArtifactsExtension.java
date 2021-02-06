@@ -39,6 +39,10 @@ public class ArtifactsExtension extends DefaultNamedDomainObjectSet<Artifact> im
         return artifact(name, FileCollectionArtifact.class, config);
     }
 
+    public FileTreeArtifact fileTreeArtifact(String name, final Action<FileTreeArtifact> config) {
+        return artifact(name, FileTreeArtifact.class, config);
+    }
+
     public CommandArtifact commandArtifact(String name, final Action<CommandArtifact> config) {
         return artifact(name, CommandArtifact.class, config);
     }

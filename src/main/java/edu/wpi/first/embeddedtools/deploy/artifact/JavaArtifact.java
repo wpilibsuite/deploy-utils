@@ -30,7 +30,7 @@ class JavaArtifact extends FileArtifact implements TaskHungryArtifact {
         }
 
         Provider<RegularFile> file = jarTasks[0].getArchiveFile();
-        getFile().set(file);
+        getFile().set(file.get().getAsFile());
     }
 
     public void setJar(Object jar) {

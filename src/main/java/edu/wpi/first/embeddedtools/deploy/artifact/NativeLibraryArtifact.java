@@ -71,7 +71,7 @@ class NativeLibraryArtifact extends FileCollectionArtifact {
                 + library + ", platform " + targetPlatform + ", flavor " + flavor + ", buildType " + buildType);
         }
 
-        getFiles().from(candidates.get());
+        getFiles().set(candidates.get());
         super.deploy(ctx);
     }
 }

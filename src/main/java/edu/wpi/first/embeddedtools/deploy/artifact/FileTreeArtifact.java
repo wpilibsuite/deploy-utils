@@ -1,10 +1,15 @@
 package edu.wpi.first.embeddedtools.deploy.artifact;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
 import org.gradle.api.Project;
+import org.gradle.api.file.FileTree;
 import org.gradle.api.provider.Property;
 
 import edu.wpi.first.embeddedtools.Resolver;
@@ -12,41 +17,47 @@ import edu.wpi.first.embeddedtools.deploy.cache.CacheMethod;
 import edu.wpi.first.embeddedtools.deploy.context.DeployContext;
 import edu.wpi.first.embeddedtools.log.ETLogger;
 
-class FileArtifact extends AbstractArtifact implements CacheableArtifact {
+public class FileTreeArtifact extends AbstractArtifact implements CacheableArtifact {
 
     @Inject
-    public FileArtifact(String name, Project project) {
+    public FileTreeArtifact(String name, Project project) {
         super(name, project);
-
-        file = project.getObjects().property(File.class);
+        files = project.getObjects().property(FileTree.class);
     }
 
-    private final Property<File> file;
+    private final Property<FileTree> files;
 
-    public Property<File> getFile() {
-        return file;
+    public Property<FileTree> getFiles() {
+        return files;
     }
-
-    private String filename = null;
 
     private Object cache = "md5sum";
-
     private Resolver<CacheMethod> cacheResolver;
 
     @Override
     public void deploy(DeployContext context) {
-        if (file.isPresent()) {
-            File f = file.get();
-            context.put(f, (filename == null ? f.getName() : filename), cacheResolver != null ? cacheResolver.resolve(cache) : null);
+        if (files.isPresent()) {
+            Map<String, File> f = new HashMap<>();
+            Set<String> mkdirs = new HashSet<>();
+            // TODO: we can probably use filevisit in dep root finding.
+            files.get().visit(details -> {
+                if (details.isDirectory()) {
+                    mkdirs.add(details.getPath());
+                } else {
+                    f.put(details.getPath(), details.getFile());
+                }
+            });
+
+            context.execute("mkdir -p " + String.join(" ", mkdirs));
+            context.put(f, cacheResolver != null ? cacheResolver.resolve(cache) : null);
         } else {
             ETLogger logger = context.getLogger();
             if (logger != null) {
-                logger.log("No file provided for " + toString());
+                logger.log("No file tree provided for " + toString());
             }
         }
     }
 
-    @Override
     public void setCache(Object cacheMethod) {
         this.cache = cacheMethod;
     }
@@ -54,14 +65,6 @@ class FileArtifact extends AbstractArtifact implements CacheableArtifact {
     @Override
     public Object getCache() {
         return this.cache;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
-
-    public String getFilename() {
-        return filename;
     }
 
     @Override

@@ -82,7 +82,7 @@ public class NativeArtifact extends FileArtifact implements TaskHungryArtifact {
             throw new GradleException(toString() + " given multiple Link tasks: " + linkTasks);
 
         RegularFileProperty file = linkTasks[0].getLinkedFile();
-        getFile().set(file);
+        getFile().set(file.getAsFile());
     }
 
     public void configureLibsArtifact(BinaryLibraryArtifact bla) {

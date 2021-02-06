@@ -132,7 +132,7 @@ public class ETNativeDepSet implements NativeDependencySet, SystemLibsDependency
             return false;
         if (buildType != null && !buildType.equals(btype))
             return false;
-        if (!targetPlatform.equals(plat))
+        if (targetPlatform == null || !targetPlatform.equals(plat))
             return false;
 
         return true;
@@ -143,7 +143,7 @@ public class ETNativeDepSet implements NativeDependencySet, SystemLibsDependency
             return false;
         if (buildType != null && !buildType.getName().equals(buildTypeName))
             return false;
-        if (!targetPlatform.getName().equals(platformName))
+        if (targetPlatform == null || !targetPlatform.getName().equals(platformName))
             return false;
 
         return true;

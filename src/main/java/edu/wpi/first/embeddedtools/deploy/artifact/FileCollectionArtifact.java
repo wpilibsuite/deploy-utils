@@ -6,7 +6,8 @@ import edu.wpi.first.embeddedtools.deploy.context.DeployContext;
 import edu.wpi.first.embeddedtools.log.ETLogger;
 
 import org.gradle.api.Project;
-import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.file.FileCollection;
+import org.gradle.api.provider.Property;
 
 import javax.inject.Inject;
 
@@ -15,12 +16,12 @@ class FileCollectionArtifact extends AbstractArtifact implements CacheableArtifa
     @Inject
     public FileCollectionArtifact(String name, Project project) {
         super(name, project);
-        files = project.getObjects().fileCollection();
+        files = project.getObjects().property(FileCollection.class);
     }
 
-    private final ConfigurableFileCollection files;
+    private final Property<FileCollection> files;
 
-    public ConfigurableFileCollection getFiles() {
+    public Property<FileCollection> getFiles() {
         return files;
     }
 
@@ -29,9 +30,8 @@ class FileCollectionArtifact extends AbstractArtifact implements CacheableArtifa
 
     @Override
     public void deploy(DeployContext context) {
-        // TODO see if we need to specially handle file trees now
-        if (!files.isEmpty())
-            context.put(files.getFiles(), cacheResolver != null ? cacheResolver.resolve(cache) : null);
+        if (files.isPresent())
+            context.put(files.get().getFiles(), cacheResolver != null ? cacheResolver.resolve(cache) : null);
         else {
             ETLogger logger = context.getLogger();
             if (logger != null) {

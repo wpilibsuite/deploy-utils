@@ -28,7 +28,7 @@ class FileCollectionArtifactTest extends AbstractArtifactTestSpec {
             getFiles() >> actualFiles
         }
 
-        artifact.setFiles(files)
+        artifact.files.set(files)
 
         when:
         artifact.deploy(ctx)
@@ -46,7 +46,7 @@ class FileCollectionArtifactTest extends AbstractArtifactTestSpec {
         }
 
         artifact.setCacheResolver(resolver)
-        artifact.setFiles(files)
+        artifact.files.set(files)
 
         when:
         artifact.deploy(ctx)

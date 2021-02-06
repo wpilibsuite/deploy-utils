@@ -26,7 +26,7 @@ class FileArtifactTest extends AbstractArtifactTestSpec {
             getName() >> "filename"
         }
 
-        artifact.setFile(file)
+        artifact.file.set(file)
 
         when:
         artifact.deploy(ctx)
@@ -40,7 +40,7 @@ class FileArtifactTest extends AbstractArtifactTestSpec {
             getName() >> "filename"
         }
 
-        artifact.setFile(file)
+        artifact.file.set(file)
         artifact.setFilename("othername")
 
         when:
@@ -58,7 +58,7 @@ class FileArtifactTest extends AbstractArtifactTestSpec {
         }
 
         artifact.setCacheResolver(resolver)
-        artifact.setFile(file)
+        artifact.file.set(file)
 
         when:
         artifact.deploy(ctx)

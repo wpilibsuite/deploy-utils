@@ -6,8 +6,6 @@ import edu.wpi.first.embeddedtools.deploy.context.DeployContext
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileVisitDetails
 
-// TODO make this work again
-
 class FileTreeArtifactTest extends AbstractArtifactTestSpec {
 
     FileTreeArtifact artifact
@@ -43,7 +41,7 @@ class FileTreeArtifactTest extends AbstractArtifactTestSpec {
         }
         def fileTree = Mock(FileTree) {
             visit(_) >> { cb ->
-                (dirEntries + fileEntries).each { cb.first().call(it) }
+                (dirEntries + fileEntries).each { cb.first().execute(it) }
                 null
             }
         }
@@ -54,7 +52,7 @@ class FileTreeArtifactTest extends AbstractArtifactTestSpec {
                 "mydir/subdir/test": fileEntries[2].getFile()
         ]
 
-        artifact.setFiles(fileTree)
+        artifact.files.set(fileTree)
 
         when:
         artifact.deploy(ctx)
@@ -73,7 +71,7 @@ class FileTreeArtifactTest extends AbstractArtifactTestSpec {
         }
 
         artifact.setCacheResolver(resolver)
-        artifact.setFiles(fileTree)
+        artifact.files.set(fileTree)
 
         when:
         artifact.deploy(ctx)
