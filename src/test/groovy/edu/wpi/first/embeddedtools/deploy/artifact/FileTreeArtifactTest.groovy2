@@ -6,6 +6,8 @@ import edu.wpi.first.embeddedtools.deploy.context.DeployContext
 import org.gradle.api.file.FileTree
 import org.gradle.api.file.FileVisitDetails
 
+// TODO make this work again
+
 class FileTreeArtifactTest extends AbstractArtifactTestSpec {
 
     FileTreeArtifact artifact

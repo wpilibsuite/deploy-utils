@@ -52,7 +52,7 @@ class DeployPlugin implements Plugin<Project> {
                         }
 
                         if (artifact.deployLibraries) {
-                            deployExtension.artifacts.binaryLibraryArtifact("${artifact.name}Libraries") { BinaryLibraryArtifact bla ->
+                            deployExtension.artifacts.binaryLibraryArtifact("${artifact.name}Libraries".toString()) { BinaryLibraryArtifact bla ->
                                 bla.binary = bin
                                 artifact.configureLibsArtifact(bla)
                                 bin.tasks.withType(AbstractLinkTask) { AbstractLinkTask task ->
