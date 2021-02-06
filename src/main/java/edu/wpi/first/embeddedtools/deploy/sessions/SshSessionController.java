@@ -1,5 +1,11 @@
 package edu.wpi.first.embeddedtools.deploy.sessions;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+import java.util.Properties;
+
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
@@ -7,16 +13,9 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
-import edu.wpi.first.embeddedtools.deploy.CommandDeployResult;
+import org.codehaus.groovy.runtime.IOGroovyMethods;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Map;
-import java.util.Properties;
-import java.util.stream.Collectors;
+import edu.wpi.first.embeddedtools.deploy.CommandDeployResult;
 
 public class SshSessionController extends AbstractSessionController implements IPSessionController {
 
@@ -80,8 +79,7 @@ public class SshSessionController extends AbstractSessionController implements I
             exec.connect();
             exec.run();
             try {
-                String text = new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
-                return new CommandDeployResult(command, text, exec.getExitStatus());
+                return new CommandDeployResult(command, IOGroovyMethods.getText(is), exec.getExitStatus());
             } finally {
                 exec.disconnect();
                 release(sem);

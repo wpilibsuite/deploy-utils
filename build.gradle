@@ -16,6 +16,7 @@ repositories {
 
 dependencies {
     api 'com.jcraft:jsch:0.1.55'
+    api 'com.google.code.gson:gson:2.8.6'
 
     testImplementation('org.spockframework:spock-core:1.2-groovy-2.5') {
         exclude group: 'org.codehaus.groovy'
