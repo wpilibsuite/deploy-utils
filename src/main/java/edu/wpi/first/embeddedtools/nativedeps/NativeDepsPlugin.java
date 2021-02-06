@@ -204,8 +204,8 @@ public class NativeDepsPlugin implements Plugin<Project> {
                             // <<!!ET_NOMATCH!!> is a magic string in the case the matchers are null.
                             // This is because, without include, the filter will include all files
                             // by default. We don't want this behavior.
-                            filter.include(matchers == null ? List.of("<<!!ET_NOMATCH!!>") : matchers);
-                            filter.exclude(excludes == null ? List.of() : excludes);
+                            filter.include(matchers == null || matchers.isEmpty() ? List.of("<<!!ET_NOMATCH!!>") : matchers);
+                            filter.exclude(excludes == null || excludes.isEmpty() ? List.of() : excludes);
 						}
 
                     });
