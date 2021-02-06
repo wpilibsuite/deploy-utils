@@ -43,4 +43,9 @@ public class CommandDeployResult {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return "CommandDeployResult(" + getCommand() + ", " + getResult() + ", " + getExitCode() + ")";
+    }
+
 }
