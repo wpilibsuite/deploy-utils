@@ -1,6 +1,6 @@
 package edu.wpi.first.embeddedtools.deploy.target;
 
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
@@ -87,13 +87,13 @@ public class RemoteTarget implements Named {
         return locations;
     }
 
-    private Function<DeployContext, Boolean> onlyIf = null;;
+    private Predicate<DeployContext> onlyIf = null;;
 
-    public Function<DeployContext, Boolean> getOnlyIf() {
+    public Predicate<DeployContext> getOnlyIf() {
         return onlyIf;
     }
 
-    public void setOnlyIf(Function<DeployContext, Boolean> onlyIf) {
+    public void setOnlyIf(Predicate<DeployContext> onlyIf) {
         this.onlyIf = onlyIf;
     }
 
@@ -127,7 +127,7 @@ public class RemoteTarget implements Named {
         }
 
         log.debug("OnlyIf...");
-        boolean toConnect = onlyIf.apply(ctx);
+        boolean toConnect = onlyIf.test(ctx);
         if (!toConnect) {
             log.debug("OnlyIf check failed! Not connecting...");
             return false;
