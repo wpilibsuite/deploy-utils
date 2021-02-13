@@ -18,7 +18,7 @@ import edu.wpi.first.embeddedtools.deploy.target.location.DeployLocation;
 import edu.wpi.first.embeddedtools.deploy.target.location.DeployLocationSet;
 
 public class RemoteTarget implements Named {
-    private Logger log;
+    private final Logger log;
     private final String name;
     private final Project project;
 
@@ -81,14 +81,10 @@ public class RemoteTarget implements Named {
         this.dry = dry;
     }
 
-    private DeployLocationSet locations;
+    private final DeployLocationSet locations;
 
     public DeployLocationSet getLocations() {
         return locations;
-    }
-
-    public void setLocations(DeployLocationSet locations) {
-        this.locations = locations;
     }
 
     private Function<DeployContext, Boolean> onlyIf = null;;
