@@ -69,12 +69,14 @@ public class SshSessionController extends AbstractSessionController implements I
             InputStream is = exec.getInputStream();
             exec.connect();
             exec.run();
+            String result = null;
             try {
-                return new CommandDeployResult(command, IOGroovyMethods.getText(is), exec.getExitStatus());
+                result = IOGroovyMethods.getText(is);
             } finally {
                 exec.disconnect();
                 release(sem);
             }
+            return new CommandDeployResult(command, result, exec.getExitStatus());
         } catch (JSchException | IOException e) {
             throw new RuntimeException(e);
         }
