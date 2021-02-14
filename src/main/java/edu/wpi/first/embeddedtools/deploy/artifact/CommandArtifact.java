@@ -9,8 +9,8 @@ import edu.wpi.first.embeddedtools.deploy.context.DeployContext;
 
 public class CommandArtifact extends AbstractArtifact {
 
-    String command = null;
-    CommandDeployResult result = null;
+    private String command = null;
+    private CommandDeployResult result = null;
 
     @Inject
     public CommandArtifact(String name, Project project) {
@@ -32,11 +32,6 @@ public class CommandArtifact extends AbstractArtifact {
 
     public CommandDeployResult getResult() {
         return result;
-    }
-
-
-    public void setResult(CommandDeployResult result) {
-        this.result = result;
     }
 
 }

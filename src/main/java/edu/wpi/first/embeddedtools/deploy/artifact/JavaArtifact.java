@@ -1,43 +1,35 @@
 package edu.wpi.first.embeddedtools.deploy.artifact;
 
-import org.gradle.api.GradleException;
-import org.gradle.api.Project;
-import org.gradle.api.Task;
-import org.gradle.api.file.RegularFile;
-import org.gradle.api.provider.Provider;
-import org.gradle.api.tasks.bundling.Jar;
-
-import java.util.Set;
-import java.util.concurrent.Callable;
 import javax.inject.Inject;
 
-public class JavaArtifact extends FileArtifact implements TaskHungryArtifact {
+import org.gradle.api.GradleException;
+import org.gradle.api.Project;
+import org.gradle.api.tasks.TaskProvider;
+import org.gradle.api.tasks.bundling.Jar;
+
+public class JavaArtifact extends FileArtifact {
 
     @Inject
     public JavaArtifact(String name, Project project) {
         super(name, project);
-        Callable<Object> cbl = () -> jar;
-        dependsOn(cbl);
     }
 
-    private Object jar = "jar";
+    private boolean isSet = false;
 
-    @Override
-    public void taskDependenciesAvailable(Set<? extends Task> tasks) {
-        Jar[] jarTasks = tasks.stream().filter(x -> x instanceof Jar).map(x -> (Jar)x).toArray(Jar[]::new);
-        if (jarTasks.length > 1) {
-            throw new GradleException(toString() + " given multiple Jar tasks: " + jarTasks);
+    public void setJarTask(TaskProvider<Jar> jarTask) {
+        if (isSet) {
+            throw new GradleException("Can not set jar task twice");
         }
-
-        Provider<RegularFile> file = jarTasks[0].getArchiveFile();
-        getFile().set(file.get().getAsFile());
+        dependsOn(jarTask);
+        getFile().set(jarTask.get().getArchiveFile().map(x -> x.getAsFile()));
     }
 
-    public void setJar(Object jar) {
-        this.jar = jar;
-    }
-
-    public Object getJar() {
-        return jar;
+    public void setJarTask(Jar jarTask) {
+        if (isSet) {
+            throw new GradleException("Can not set jar task twice");
+        }
+        dependsOn(jarTask);
+        isSet = true;
+        getFile().set(jarTask.getArchiveFile().map(x -> x.getAsFile()));
     }
 }

@@ -44,11 +44,13 @@ public class TargetDiscoveryTask extends DefaultTask implements Consumer<DeployC
         this.workerExecutor = workerExecutor;
     }
 
-    public boolean available() {
+    @Internal
+    public boolean isAvailable() {
         return activeContext != null;
     }
 
-    public DeployContext activeContext() {
+    @Internal
+    public DeployContext getActiveContext() {
         if (activeContext != null) {
             return activeContext;
         } else {

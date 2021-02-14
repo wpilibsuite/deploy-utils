@@ -14,6 +14,7 @@ import org.gradle.model.RuleSource;
 import org.gradle.nativeplatform.NativeBinarySpec;
 import org.gradle.nativeplatform.tasks.AbstractLinkTask;
 import org.gradle.platform.base.BinaryContainer;
+import org.gradle.platform.base.ComponentSpecContainer;
 
 import edu.wpi.first.embeddedtools.deploy.artifact.ArtifactDeployWorker;
 import edu.wpi.first.embeddedtools.deploy.artifact.NativeArtifact;
@@ -26,7 +27,8 @@ public class DeployPlugin implements Plugin<Project> {
 
         DeployExtension deployExt = project.getExtensions().create("deploy", DeployExtension.class, project);
 
-        deployExt.getArtifacts().withType(NativeArtifact.class).all(art -> {});
+        deployExt.getArtifacts().withType(NativeArtifact.class).all(art -> {
+        });
 
         // TODO Move these onto extensions so this becomes a non issue
         project.getGradle().buildFinished(x -> {
@@ -35,24 +37,51 @@ public class DeployPlugin implements Plugin<Project> {
         });
     }
 
+    public static class ArtifactBinaryLinkTaskTuple {
+        private final NativeArtifact artifact;
+        private final NativeBinarySpec binary;
+        private final AbstractLinkTask linkTask;
+
+        public NativeArtifact getArtifact() {
+            return artifact;
+        }
+
+        public NativeBinarySpec getBinary() {
+            return binary;
+        }
+
+        public AbstractLinkTask getLinkTask() {
+            return linkTask;
+        }
+
+        public ArtifactBinaryLinkTaskTuple(NativeArtifact artifact, NativeBinarySpec binary,
+                AbstractLinkTask linkTask) {
+            this.artifact = artifact;
+            this.binary = binary;
+            this.linkTask = linkTask;
+        }
+
+
+    }
+
     public static class DeployRules extends RuleSource {
         @Mutate
-        public void createBinariesTasks(final ModelMap<Task> tasks, final ExtensionContainer ext, final BinaryContainer binaries) {
+        public void createBinariesTasks(final ModelMap<Task> tasks, final ExtensionContainer ext, final BinaryContainer binaries, final ComponentSpecContainer components) {
             DeployExtension deployExtension = ext.getByType(DeployExtension.class);
             List<NativeArtifact> artifacts = new ArrayList<>(deployExtension.getArtifacts().withType(NativeArtifact.class));
+            if (artifacts.size() == 0) {
+                return;
+            }
+            List<ArtifactBinaryLinkTaskTuple> blaArtifacts = new ArrayList<>();
             for (NativeArtifact artifact : artifacts) {
-                for (NativeBinarySpec bin : binaries.withType(NativeBinarySpec.class)) {
-                    if (artifact.appliesTo(bin)) {
-                        bin.getTasks().withType(AbstractLinkTask.class, linkTask -> artifact.dependsOn(linkTask));
-                        if (artifact.isDeployLibraries()) {
-                            deployExtension.getArtifacts().binaryLibraryArtifact(artifact.getName() + "Libraries", bla -> {
-                                bla.setBinary(bin);
-                                artifact.configureLibsArtifact(bla);
-                                bin.getTasks().withType(AbstractLinkTask.class, linkTask -> bla.dependsOn(linkTask));
-                            });
-                        }
-                    }
+                ArtifactBinaryLinkTaskTuple foundBinaryToConfigureBla = artifact.configureFromModel(components, deployExtension);
+                if (foundBinaryToConfigureBla != null) {
+                    blaArtifacts.add(foundBinaryToConfigureBla);
                 }
+            }
+
+            for (ArtifactBinaryLinkTaskTuple toAdd : blaArtifacts) {
+                toAdd.getArtifact().configureBlaArtifact(toAdd, deployExtension);
             }
         }
     }

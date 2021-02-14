@@ -72,7 +72,7 @@ public class DefaultDeployContext implements DeployContext {
         session.execute("mkdir -p " + workingDir);
 
         Map<String, File> cacheHit = new HashMap<>();
-        Map<String, File> cacheMiss = files;
+        Map<String, File> cacheMiss = new HashMap<>(files);
 
         if (cache != null && cache.compatible(this)) {
             Set<String> updateRequired = cache.needsUpdate(this, files);

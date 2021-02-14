@@ -46,7 +46,7 @@ public abstract class ArtifactDeployWorker implements WorkAction<ArtifactDeployP
     }
 
     public void run(DeployContext rootContext, Artifact artifact) {
-        DeployContext context = rootContext.subContext(artifact.getDirectory());
+        DeployContext context = rootContext.subContext(artifact.getDirectory().get());
         boolean enabled = artifact.isEnabled(context);
         if (enabled) {
             ArtifactRunner.runDeploy(artifact, context);

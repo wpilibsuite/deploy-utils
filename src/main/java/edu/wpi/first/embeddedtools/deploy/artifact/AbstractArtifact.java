@@ -1,16 +1,17 @@
 package edu.wpi.first.embeddedtools.deploy.artifact;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
 import org.gradle.api.Action;
-import org.gradle.api.DomainObjectSet;
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.tasks.TaskCollection;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.TaskProvider;
 
+import edu.wpi.first.embeddedtools.deploy.DeployExtension;
 import edu.wpi.first.embeddedtools.deploy.context.DeployContext;
 import edu.wpi.first.embeddedtools.deploy.target.RemoteTarget;
 import edu.wpi.first.embeddedtools.deploy.target.location.DeployLocation;
@@ -18,14 +19,13 @@ import edu.wpi.first.embeddedtools.deploy.target.location.DeployLocation;
 public abstract class AbstractArtifact implements Artifact {
     private final String name;
     private final Project project;
-
-    private final DomainObjectSet<Object> dependencies;
-    private final DomainObjectSet<Object> targets;
+    private RemoteTarget target;
+    private TaskProvider<ArtifactDeployTask> deployTask;
 
     private boolean disabled = false;
     private boolean explicit = false;
 
-    private String directory = null;
+    private final Property<String> directory;
     private List<Action<DeployContext>> predeploy = new WrappedArrayList<>();
     private List<Action<DeployContext>> postdeploy = new WrappedArrayList<>();
     private List<Action<Artifact>> preWorkerThread = new WrappedArrayList<>();
@@ -35,8 +35,40 @@ public abstract class AbstractArtifact implements Artifact {
     public AbstractArtifact(String name, Project project) {
         this.name = name;
         this.project = project;
-        this.dependencies = project.getObjects().domainObjectSet(Object.class);
-        this.targets = project.getObjects().domainObjectSet(Object.class);
+        directory = project.getObjects().property(String.class);
+        directory.set("");
+    }
+
+    @Override
+    public TaskProvider<ArtifactDeployTask> getDeployTask() {
+        return deployTask;
+    }
+
+    @Override
+    public RemoteTarget getTarget() {
+        return target;
+    }
+
+    @Override
+    public void setTarget(Object tObj) {
+        if (this.target != null) {
+            throw new GradleException("Can not set target of task twice");
+        }
+        DeployExtension de = project.getExtensions().getByType(DeployExtension.class);
+        RemoteTarget target = de.getTargets().resolve(tObj);
+        TaskProvider<ArtifactDeployTask> deployTask = project.getTasks().register("deploy" + name + target.getName(), ArtifactDeployTask.class, task -> {
+            task.setArtifact(this);
+            task.setTarget(target);
+            task.setGroup("EmbeddedTools");
+            task.setDescription("Deploys " + name + " to " + target.getName());
+
+            task.dependsOn(target.getTargetDiscoveryTask());
+
+        });
+        target.artifactAdded(this, deployTask);
+        target.getDeployTask().configure(x -> x.dependsOn(deployTask));
+        this.target = target;
+        this.deployTask = deployTask;
     }
 
     @Override
@@ -51,7 +83,7 @@ public abstract class AbstractArtifact implements Artifact {
 
     @Override
     public void dependsOn(Object... paths) {
-        dependencies.addAll(Arrays.asList(paths));
+        deployTask.configure(y -> y.dependsOn(paths));
     }
 
     @Override
@@ -64,27 +96,8 @@ public abstract class AbstractArtifact implements Artifact {
     }
 
     @Override
-    public DomainObjectSet<Object> getDependencies() {
-        return dependencies;
-    }
-
-    @Override
-    public DomainObjectSet<Object> getTargets() {
-        return targets;
-    }
-
-    @Override
-    public TaskCollection<ArtifactDeployTask> getTasks() {
-        return project.getTasks().withType(ArtifactDeployTask.class).matching(x -> x.getArtifact() == this);
-    }
-
-    @Override
-    public String getDirectory() {
+    public Property<String> getDirectory() {
         return directory;
-    }
-
-    public void setDirectory(String directory) {
-        this.directory = directory;
     }
 
     @Override
@@ -92,17 +105,9 @@ public abstract class AbstractArtifact implements Artifact {
         return predeploy;
     }
 
-    public void setPredeploy(List<Action<DeployContext>> predeploy) {
-        this.predeploy = predeploy;
-    }
-
     @Override
     public List<Action<DeployContext>> getPostdeploy() {
         return postdeploy;
-    }
-
-    public void setPostdeploy(List<Action<DeployContext>> postdeploy) {
-        this.postdeploy = postdeploy;
     }
 
     public Predicate<DeployContext> getOnlyIf() {

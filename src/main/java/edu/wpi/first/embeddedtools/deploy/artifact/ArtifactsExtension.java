@@ -31,6 +31,10 @@ public class ArtifactsExtension extends DefaultNamedDomainObjectSet<Artifact> im
         return artifact;
     }
 
+    public ActionArtifact actionArtifact(String name, final Action<ActionArtifact> config) {
+        return artifact(name, ActionArtifact.class, config);
+    }
+
     public FileArtifact fileArtifact(String name, final Action<FileArtifact> config) {
         return artifact(name, FileArtifact.class, config);
     }
@@ -45,6 +49,10 @@ public class ArtifactsExtension extends DefaultNamedDomainObjectSet<Artifact> im
 
     public CommandArtifact commandArtifact(String name, final Action<CommandArtifact> config) {
         return artifact(name, CommandArtifact.class, config);
+    }
+
+    public MultiCommandArtifact multiCommandArtifact(String name, final Action<MultiCommandArtifact> config) {
+        return artifact(name, MultiCommandArtifact.class, config);
     }
 
     public JavaArtifact javaArtifact(String name, final Action<JavaArtifact> config) {

@@ -1,18 +1,20 @@
 package edu.wpi.first.embeddedtools.deploy.artifact;
 
+import javax.inject.Inject;
+
+import org.gradle.api.DomainObjectSet;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
-import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.nativeplatform.NativeBinarySpec;
 import org.gradle.nativeplatform.tasks.AbstractLinkTask;
+import org.gradle.platform.base.ComponentSpecContainer;
+import org.gradle.platform.base.VariantComponentSpec;
 
-import java.util.Set;
+import edu.wpi.first.embeddedtools.deploy.DeployExtension;
+import edu.wpi.first.embeddedtools.deploy.DeployPlugin;
 
-import javax.inject.Inject;
-
-public class NativeArtifact extends FileArtifact implements TaskHungryArtifact {
+public class NativeArtifact extends FileArtifact {
 
     @Inject
     public NativeArtifact(String name, Project project) {
@@ -23,7 +25,6 @@ public class NativeArtifact extends FileArtifact implements TaskHungryArtifact {
 
     // Accessed in DeployPlugin rules.
     private String component = null;
-    private String targetPlatform = null;
     private String buildType = null;
     private String flavor = null;
     private boolean deployLibraries = true;
@@ -35,14 +36,6 @@ public class NativeArtifact extends FileArtifact implements TaskHungryArtifact {
 
     public void setComponent(String component) {
         this.component = component;
-    }
-
-    public String getTargetPlatform() {
-        return targetPlatform;
-    }
-
-    public void setTargetPlatform(String targetPlatform) {
-        this.targetPlatform = targetPlatform;
     }
 
     public String getBuildType() {
@@ -73,35 +66,60 @@ public class NativeArtifact extends FileArtifact implements TaskHungryArtifact {
         return libraryDirectory;
     }
 
-    @Override
-    public void taskDependenciesAvailable(Set<? extends Task> tasks) {
-        AbstractLinkTask[] linkTasks = tasks.stream().filter(x -> x instanceof AbstractLinkTask).map(x -> (AbstractLinkTask)x).toArray(AbstractLinkTask[]::new);
-        if (linkTasks.length == 0)
-            throw new GradleException(toString() + " does not have any link tasks!");
-        if (linkTasks.length > 1)
-            throw new GradleException(toString() + " given multiple Link tasks: " + linkTasks);
-
-        RegularFileProperty file = linkTasks[0].getLinkedFile();
-        getFile().set(file.getAsFile());
-    }
-
-    public void configureLibsArtifact(BinaryLibraryArtifact bla) {
-        bla.getTargets().addAll(getTargets());
-        if (!libraryDirectory.isPresent()) {
-            bla.setDirectory(getDirectory());
-        } else {
-            bla.setDirectory(libraryDirectory.get());
+    public DeployPlugin.ArtifactBinaryLinkTaskTuple configureFromModel(ComponentSpecContainer components, DeployExtension de) {
+        VariantComponentSpec foundComponent = components.withType(VariantComponentSpec.class).get(getComponent());
+        if (foundComponent == null) {
+            throw new GradleException("Component " + getComponent() + " for " + getName() + " artifact not found");
         }
+        AbstractLinkTask linkTask = null;
+        NativeBinarySpec foundBin = null;
+        for (NativeBinarySpec binary : foundComponent.getBinaries().withType(NativeBinarySpec.class)) {
+            if (!appliesTo(binary)) {
+                continue;
+            }
+            DomainObjectSet<AbstractLinkTask> potentialLinkTasks = binary.getTasks().withType(AbstractLinkTask.class);
+            if (potentialLinkTasks.isEmpty()) {
+                continue;
+            }
+            linkTask = potentialLinkTasks.iterator().next();
+            dependsOn(linkTask);
+            getFile().set(linkTask.getLinkedFile().map(x -> x.getAsFile()));
+            foundBin = binary;
+            break;
+        }
+        if (foundBin == null) {
+            throw new GradleException("Linkable binary in " + getComponent() + " for " + getName() + " artifact not found");
+        }
+        if (isDeployLibraries()) {
+            return new DeployPlugin.ArtifactBinaryLinkTaskTuple(this, foundBin, linkTask);
+        }
+        return null;
     }
 
-    public boolean appliesTo(NativeBinarySpec bin) {
+    public void configureBlaArtifact(DeployPlugin.ArtifactBinaryLinkTaskTuple toAdd, DeployExtension de) {
+        if (this != toAdd.getArtifact()) {
+            throw new GradleException("Can only configure this target");
+        }
+        de.getArtifacts().binaryLibraryArtifact(toAdd.getArtifact().getName() + "Libraries", bla -> {
+            bla.setBinary(toAdd.getBinary());
+            bla.setTarget(this.getTarget());
+            if (this.libraryDirectory.isPresent()) {
+                bla.getDirectory().set(this.getLibraryDirectory());
+            } else {
+                bla.getDirectory().set(this.getDirectory());
+            }
+            bla.dependsOn(toAdd.getLinkTask());
+        });
+    }
+
+    private boolean appliesTo(NativeBinarySpec bin) {
         if (!bin.getComponent().getName().equals(component))
             return false;
         if (flavor != null && !getFlavor().equals(bin.getFlavor().getName()))
             return false;
         if (buildType != null && !getBuildType().equals(bin.getBuildType().getName()))
             return false;
-        if (!getTargetPlatform().equals(bin.getTargetPlatform().getName()))
+        if (!getTarget().getTargetPlatform().equals(bin.getTargetPlatform().getName()))
             return false;
 
         return true;
