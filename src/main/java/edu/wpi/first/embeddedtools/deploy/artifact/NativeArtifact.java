@@ -2,6 +2,7 @@ package edu.wpi.first.embeddedtools.deploy.artifact;
 
 import javax.inject.Inject;
 
+import org.gradle.api.Action;
 import org.gradle.api.DomainObjectSet;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -29,6 +30,15 @@ public class NativeArtifact extends FileArtifact {
     private String flavor = null;
     private boolean deployLibraries = true;
     private final Property<String> libraryDirectory;
+    private Action<BinaryLibraryArtifact> onBinaryLibraryArtifactCreated;
+
+    public Action<BinaryLibraryArtifact> getOnBinaryLibraryArtifactCreated() {
+        return onBinaryLibraryArtifactCreated;
+    }
+
+    public void setOnBinaryLibraryArtifactCreated(Action<BinaryLibraryArtifact> onBinaryLibraryArtifactCreated) {
+        this.onBinaryLibraryArtifactCreated = onBinaryLibraryArtifactCreated;
+    }
 
     public String getComponent() {
         return component;
@@ -101,6 +111,9 @@ public class NativeArtifact extends FileArtifact {
             throw new GradleException("Can only configure this target");
         }
         de.getArtifacts().binaryLibraryArtifact(toAdd.getArtifact().getName() + "Libraries", bla -> {
+            if (onBinaryLibraryArtifactCreated != null) {
+                onBinaryLibraryArtifactCreated.execute(bla);
+            }
             bla.setBinary(toAdd.getBinary());
             bla.setTarget(this.getTarget());
             if (this.libraryDirectory.isPresent()) {
