@@ -125,19 +125,21 @@ public class NativeDepsPlugin implements Plugin<Project> {
         @BinaryTasks
         void addLinkerArgs(ModelMap<Task> tasks, final NativeBinarySpec binary) {
             tasks.withType(AbstractLinkTask.class, task -> {
-                task.getProject().getProviders().provider(new Callable<List<String>>() {
-                    @Override
-                    public List<String> call() throws Exception {
-                        List<String> libs = new ArrayList<>();
-                        for (NativeDependencySet lib : binary.getLibs()) {
-                            if (lib instanceof DelegatedDependencySet) {
-                                DelegatedDependencySet set = (DelegatedDependencySet)lib;
-                                libs.addAll(set.getSystemLibs());
+                task.getLinkerArgs().addAll(
+                    task.getProject().getProviders().provider(new Callable<List<String>>() {
+                        @Override
+                        public List<String> call() throws Exception {
+                            List<String> libs = new ArrayList<>();
+                            for (NativeDependencySet lib : binary.getLibs()) {
+                                if (lib instanceof DelegatedDependencySet) {
+                                    DelegatedDependencySet set = (DelegatedDependencySet)lib;
+                                    libs.addAll(set.getSystemLibs());
+                                }
                             }
+                            return libs;
                         }
-                        return libs;
-                    }
-                });
+                    })
+                );
             });
         }
 
