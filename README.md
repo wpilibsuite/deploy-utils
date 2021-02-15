@@ -1,8 +1,8 @@
-EmbeddedTools
+DeployUtils
 ====
 Compile and Deploy for Embedded Targets in both Java and C++.
 
-EmbeddedTools adds compiler and library rules to make writing native software easier.
+DeployUtils adds compiler and library rules to make writing native software easier.
 For all projects, you can define deployment targets and artifacts. The deploy process works over SSH/SFTP and
 is extremely quick.
 
@@ -18,17 +18,17 @@ Properties:
 Include the following in your `build.gradle`
 ```gradle
 plugins {
-    id "jaci.gradle.EmbeddedTools" version "<latest version>"
+    id "jaci.gradle.DeployUtils" version "<latest version>"
 }
 ```
 
-See [https://plugins.gradle.org/plugin/jaci.gradle.EmbeddedTools](https://plugins.gradle.org/plugin/jaci.gradle.EmbeddedTools) for the latest version
+See [https://plugins.gradle.org/plugin/jaci.gradle.DeployUtils](https://plugins.gradle.org/plugin/jaci.gradle.DeployUtils) for the latest version
 
 ## Spec
 
 ```gradle
-import edu.wpi.first.embeddedtools.toolchains.*
-import edu.wpi.first.embeddedtools.nativedeps.*
+import edu.wpi.first.deployutils.toolchains.*
+import edu.wpi.first.deployutils.nativedeps.*
 
 // DSL (all properties optional unless stated as required)
 deploy {

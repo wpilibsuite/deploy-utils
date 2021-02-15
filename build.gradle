@@ -32,25 +32,24 @@ buildScan {
 }
 
 group = "edu.wpi.first"
-archivesBaseName = "EmbeddedTools"
 version = "2021.02.06" // YYYY.MM.DD(revision)
 
 sourceCompatibility = 11
 targetCompatibility = 11
 
 pluginBundle {
-    website = 'https://github.com/wpilibsuite/EmbeddedTools'
-    vcsUrl = 'https://github.com/wpilibsuite/EmbeddedTools'
+    website = 'https://github.com/wpilibsuite/deploy-utils'
+    vcsUrl = 'https://github.com/wpilibsuite/deploy-utils'
     description = 'Additions to the model-based DSL for deploying Java and Native projects to remote targets'
     tags = ['remote', 'target', 'deploy', 'java', 'native']
 }
 
 gradlePlugin {
     plugins {
-        embeddedTools {
-            id = 'edu.wpi.first.EmbeddedTools'
-            displayName = 'EmbeddedTools'
-            implementationClass = 'edu.wpi.first.embeddedtools.EmbeddedTools'
+        DeployUtils {
+            id = 'edu.wpi.first.DeployUtils'
+            displayName = 'DeployUtils'
+            implementationClass = 'edu.wpi.first.deployutils.DeployUtils'
         }
     }
 }

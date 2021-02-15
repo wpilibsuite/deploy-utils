@@ -5,7 +5,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.jcraft:jsch:0.1.53'
-        classpath group: "jaci.gradle", name: "EmbeddedTools", version: "2019.5.26"
+        classpath group: "jaci.gradle", name: "DeployUtils", version: "2019.5.26"
     }
 }
 
@@ -16,12 +16,12 @@ plugins {
 apply plugin: "java"
 apply plugin: "cpp"
 apply plugin: "c"
-apply plugin: "jaci.gradle.EmbeddedTools"
+apply plugin: "jaci.gradle.DeployUtils"
 
-import edu.wpi.first.embeddedtools.deploy.*
-import edu.wpi.first.embeddedtools.nativedeps.CombinedNativeLib
-import edu.wpi.first.embeddedtools.nativedeps.NativeLib
-import edu.wpi.first.embeddedtools.toolchains.*
+import edu.wpi.first.deployutils.deploy.*
+import edu.wpi.first.deployutils.nativedeps.CombinedNativeLib
+import edu.wpi.first.deployutils.nativedeps.NativeLib
+import edu.wpi.first.deployutils.toolchains.*
 
 repositories.maven { repo ->
     repo.name = "WPI"
