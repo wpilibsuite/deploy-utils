@@ -143,7 +143,7 @@ model {
 
     components {
         my_program(NativeExecutableSpec) {
-            embeddedTools.useLibrary(it, "myComboLib")
+            deployUtils.useLibrary(it, "myComboLib")
         }
     }
 }
