@@ -3,6 +3,7 @@ package edu.wpi.first.deployutils.deploy.artifact;
 import javax.inject.Inject;
 
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
 
@@ -16,12 +17,14 @@ public class JavaArtifact extends FileArtifact {
 
         jarProvider = target.getProject().getObjects().property(Jar.class);
 
-        getDeployTask().configure(dt -> {
-            dt.dependsOn(jarProvider);
-        });
+        dependsOn(jarProvider);
     }
 
     private final Property<Jar> jarProvider;
+
+    public Provider<Jar> getJarProvider() {
+        return jarProvider;
+    }
 
     public void setJarTask(TaskProvider<Jar> jarTask) {
         jarProvider.set(jarTask);

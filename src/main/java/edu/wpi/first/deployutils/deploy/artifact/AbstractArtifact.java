@@ -42,7 +42,7 @@ public abstract class AbstractArtifact implements Artifact {
 
             task.dependsOn(target.getTargetDiscoveryTask());
         });
-        target.artifactAdded(this, deployTask);
+        target.getDeployTask().configure(x -> x.dependsOn(deployTask));
     }
 
     @Override

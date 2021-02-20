@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.gradle.api.Task;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.util.PatternFilterable;
 import org.gradle.api.tasks.util.PatternSet;
 import org.gradle.nativeplatform.NativeExecutableBinarySpec;
@@ -24,14 +25,15 @@ public class NativeExecutableArtifact extends AbstractArtifact implements Cachea
     public NativeExecutableArtifact(String name, RemoteTarget target) {
         super(name, target);
         libraryDirectory = target.getProject().getObjects().property(String.class);
+        filename = target.getProject().getObjects().property(String.class);
         executable = target.getProject().getObjects().property(NativeExecutableBinarySpec.class);
         cacheMethod = target.getProject().getObjects().property(CacheMethod.class);
 
-        Callable<Task> linkTaskGetter = () -> {
-            return executable.get().getTasks().getInstall();
-        };
+        installTaskProvider = target.getProject().getProviders().provider(() -> {
+            return (InstallExecutable)executable.get().getTasks().getInstall();
+        });
 
-        dependsOn(linkTaskGetter);
+        dependsOn(installTaskProvider);
     }
 
     @Override
@@ -41,6 +43,12 @@ public class NativeExecutableArtifact extends AbstractArtifact implements Cachea
 
     private boolean deployLibraries = true;
     private final Property<String> libraryDirectory;
+
+    private final Property<String> filename;
+
+    public Property<String> getFilename() {
+        return filename;
+    }
 
     private Property<NativeExecutableBinarySpec> executable;
 
@@ -66,14 +74,25 @@ public class NativeExecutableArtifact extends AbstractArtifact implements Cachea
         return libraryFilter;
     }
 
+    private final Provider<InstallExecutable> installTaskProvider;
+
+    public Provider<InstallExecutable> getInstallTaskProvider() {
+        return installTaskProvider;
+    }
+
+    protected File getDeployedFile() {
+        InstallExecutable install = (InstallExecutable)executable.get().getTasks().getInstall();
+        return install.getExecutableFile().get().getAsFile();
+    }
+
     @Override
     public void deploy(DeployContext context) {
         InstallExecutable install = (InstallExecutable)executable.get().getTasks().getInstall();
 
         CacheMethod cm = cacheMethod.getOrElse(null);
 
-        File exeFile = install.getExecutableFile().get().getAsFile();
-        context.put(exeFile, exeFile.getName(), cm);
+        File exeFile = getDeployedFile();
+        context.put(exeFile, getFilename().getOrElse(exeFile.getName()), cm);
 
         if (deployLibraries) {
             DeployContext libCtx = context;

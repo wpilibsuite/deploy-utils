@@ -79,10 +79,6 @@ public class RemoteTarget implements Named {
         return directory;
     }
 
-    public void artifactAdded(Artifact artifact, TaskProvider<ArtifactDeployTask> task) {
-        deployTask.configure(x -> x.dependsOn(task));
-    }
-
     public void setDirectory(String directory) {
         this.directory = directory;
     }
