@@ -105,7 +105,7 @@ public abstract class TargetDiscoveryWorker implements WorkAction<TargetDiscover
     }
 
     private void succeeded(DeployContext ctx, Consumer<DeployContext> callback, RemoteTarget target) {
-        log.log("Using " + ctx.friendlyString() + "for target " + target.getName());
+        log.log("Using " + ctx.friendlyString() + " for target " + target.getName());
         callback.accept(ctx);
     }
 

@@ -8,21 +8,23 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.gradle.api.Project;
 import org.gradle.api.file.FileTree;
 import org.gradle.api.provider.Property;
 
-import edu.wpi.first.deployutils.Resolver;
 import edu.wpi.first.deployutils.deploy.cache.CacheMethod;
 import edu.wpi.first.deployutils.deploy.context.DeployContext;
+import edu.wpi.first.deployutils.deploy.target.RemoteTarget;
 import edu.wpi.first.deployutils.log.ETLogger;
 
 public class FileTreeArtifact extends AbstractArtifact implements CacheableArtifact {
 
+    private final Property<CacheMethod> cacheMethod;
+
     @Inject
-    public FileTreeArtifact(String name, Project project) {
-        super(name, project);
-        files = project.getObjects().property(FileTree.class);
+    public FileTreeArtifact(String name, RemoteTarget target) {
+        super(name, target);
+        files = target.getProject().getObjects().property(FileTree.class);
+        cacheMethod = target.getProject().getObjects().property(CacheMethod.class);
     }
 
     private final Property<FileTree> files;
@@ -31,8 +33,10 @@ public class FileTreeArtifact extends AbstractArtifact implements CacheableArtif
         return files;
     }
 
-    private Object cache = "md5sum";
-    private Resolver<CacheMethod> cacheResolver;
+    @Override
+    public Property<CacheMethod> getCacheMethod() {
+        return cacheMethod;
+    }
 
     @Override
     public void deploy(DeployContext context) {
@@ -49,7 +53,7 @@ public class FileTreeArtifact extends AbstractArtifact implements CacheableArtif
             });
 
             context.execute("mkdir -p " + String.join(" ", mkdirs));
-            context.put(f, cacheResolver != null ? cacheResolver.resolve(cache) : null);
+            context.put(f, cacheMethod.getOrElse(null));
         } else {
             ETLogger logger = context.getLogger();
             if (logger != null) {
@@ -57,23 +61,4 @@ public class FileTreeArtifact extends AbstractArtifact implements CacheableArtif
             }
         }
     }
-
-    public void setCache(Object cacheMethod) {
-        this.cache = cacheMethod;
-    }
-
-    @Override
-    public Object getCache() {
-        return this.cache;
-    }
-
-    @Override
-    public void setCacheResolver(Resolver<CacheMethod> resolver) {
-        this.cacheResolver = resolver;
-    }
-
-    public Resolver<CacheMethod> getCacheResolver() {
-        return cacheResolver;
-    }
-
 }

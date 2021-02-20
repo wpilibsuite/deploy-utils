@@ -1,12 +1,12 @@
 package edu.wpi.first.deployutils.deploy.artifact;
 
-import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.provider.Property;
 import org.gradle.nativeplatform.NativeBinarySpec;
 
-import edu.wpi.first.deployutils.Resolver;
 import edu.wpi.first.deployutils.deploy.cache.CacheMethod;
 import edu.wpi.first.deployutils.deploy.context.DeployContext;
+import edu.wpi.first.deployutils.deploy.target.RemoteTarget;
 import edu.wpi.first.deployutils.log.ETLogger;
 
 import java.io.File;
@@ -18,15 +18,15 @@ import javax.inject.Inject;
 public class BinaryLibraryArtifact extends AbstractArtifact implements CacheableArtifact {
     private Set<File> files;
     private boolean doDeploy = false;
+    private final Property<CacheMethod> cacheMethod;
 
     private NativeBinarySpec binary;
 
-    private Object cache = "md5sum";
-    private Resolver<CacheMethod> cacheResolver;
-
     @Inject
-    public BinaryLibraryArtifact(String name, Project project) {
-        super(name, project);
+    public BinaryLibraryArtifact(String name, RemoteTarget target) {
+        super(name, target);
+
+        cacheMethod = target.getProject().getObjects().property(CacheMethod.class);
 
         getPreWorkerThread().add(v -> {
             Optional<FileCollection> libs = binary.getLibs().stream().map(x -> x.getRuntimeFiles()).reduce((a, b) -> a.plus(b));
@@ -35,6 +35,11 @@ public class BinaryLibraryArtifact extends AbstractArtifact implements Cacheable
                 doDeploy = true;
             }
         });
+    }
+
+    @Override
+    public Property<CacheMethod> getCacheMethod() {
+        return cacheMethod;
     }
 
     public NativeBinarySpec getBinary() {
@@ -64,31 +69,12 @@ public class BinaryLibraryArtifact extends AbstractArtifact implements Cacheable
     @Override
     public void deploy(DeployContext context) {
         if (doDeploy) {
-            context.put(files, cacheResolver != null ? cacheResolver.resolve(cache) : null);
+            context.put(files, getCacheMethod().getOrElse(null));
         } else {
             ETLogger logger = context.getLogger();
             if (logger != null) {
                 logger.log("No file(s) provided for " + toString());
             }
         }
-    }
-
-    @Override
-    public Object getCache() {
-        return cache;
-    }
-
-    @Override
-    public void setCache(Object cacheMethod) {
-        this.cache = cacheMethod;
-    }
-
-    @Override
-    public void setCacheResolver(Resolver<CacheMethod> resolver) {
-        this.cacheResolver = resolver;
-    }
-
-    public Resolver<CacheMethod> getCacheResolver() {
-        return this.cacheResolver;
     }
 }

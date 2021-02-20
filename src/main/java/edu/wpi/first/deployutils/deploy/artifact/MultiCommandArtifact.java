@@ -7,10 +7,10 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.gradle.api.GradleException;
-import org.gradle.api.Project;
 
 import edu.wpi.first.deployutils.deploy.CommandDeployResult;
 import edu.wpi.first.deployutils.deploy.context.DeployContext;
+import edu.wpi.first.deployutils.deploy.target.RemoteTarget;
 
 public class MultiCommandArtifact extends AbstractArtifact {
 
@@ -21,8 +21,8 @@ public class MultiCommandArtifact extends AbstractArtifact {
     private Map<String, CommandDeployResult> resultMap = new HashMap<>();
 
     @Inject
-    public MultiCommandArtifact(String name, Project project) {
-        super(name, project);
+    public MultiCommandArtifact(String name, RemoteTarget target) {
+        super(name, target);
     }
 
     @Override

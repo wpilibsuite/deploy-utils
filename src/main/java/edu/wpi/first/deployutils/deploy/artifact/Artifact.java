@@ -5,7 +5,6 @@ import java.util.function.Predicate;
 
 import org.gradle.api.Action;
 import org.gradle.api.Named;
-import org.gradle.api.Project;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.provider.Property;
@@ -15,11 +14,7 @@ import edu.wpi.first.deployutils.deploy.context.DeployContext;
 import edu.wpi.first.deployutils.deploy.target.RemoteTarget;
 
 public interface Artifact extends Named {
-    Project getProject();
-
     TaskProvider<ArtifactDeployTask> getDeployTask();
-
-    void setTarget(Object target);
 
     RemoteTarget getTarget();
 

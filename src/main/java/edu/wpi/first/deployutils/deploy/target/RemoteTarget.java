@@ -7,12 +7,15 @@ import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.gradle.api.Action;
 import org.gradle.api.DomainObjectCollection;
+import org.gradle.api.ExtensiblePolymorphicDomainObjectContainer;
 import org.gradle.api.Named;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.TaskProvider;
 
 import edu.wpi.first.deployutils.DeployUtils;
+import edu.wpi.first.deployutils.deploy.DeployExtension;
 import edu.wpi.first.deployutils.deploy.artifact.Artifact;
 import edu.wpi.first.deployutils.deploy.artifact.ArtifactDeployTask;
 import edu.wpi.first.deployutils.deploy.context.DeployContext;
@@ -26,12 +29,19 @@ public class RemoteTarget implements Named {
     private final Project project;
     private final TaskProvider<Task> deployTask;
     private final TaskProvider<TargetDiscoveryTask> targetDiscoveryTask;
-    private String targetPlatform;
+    private final Property<String> targetPlatform;
+    private final ExtensiblePolymorphicDomainObjectContainer<Artifact> artifacts;
+
+    public ExtensiblePolymorphicDomainObjectContainer<Artifact> getArtifacts() {
+        return artifacts;
+    }
 
     @Inject
-    public RemoteTarget(String name, Project project) {
+    public RemoteTarget(String name, Project project, DeployExtension de) {
         this.name = name;
         this.project = project;
+        targetPlatform = project.getObjects().property(String.class);
+        artifacts = project.getObjects().polymorphicDomainObjectContainer(Artifact.class);
         this.dry = DeployUtils.isDryRun(project);
         locations = project.getObjects().newInstance(DeployLocationSet.class, project, this);
         log = Logger.getLogger(toString());
@@ -44,14 +54,11 @@ public class RemoteTarget implements Named {
             task.setDescription("Determine the address(es) of target " + name);
             task.setTarget(this);
         });
+        de.configureArtifactTypes(artifacts, this);
     }
 
-    public String getTargetPlatform() {
+    public Property<String> getTargetPlatform() {
         return targetPlatform;
-    }
-
-    public void setTargetPlatform(String targetPlatform) {
-        this.targetPlatform = targetPlatform;
     }
 
     public TaskProvider<Task> getDeployTask() {
@@ -69,6 +76,7 @@ public class RemoteTarget implements Named {
     }
 
     public void artifactAdded(Artifact artifact, TaskProvider<ArtifactDeployTask> task) {
+        deployTask.configure(x -> x.dependsOn(task));
     }
 
     public void setDirectory(String directory) {

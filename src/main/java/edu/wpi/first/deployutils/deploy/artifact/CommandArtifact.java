@@ -2,10 +2,9 @@ package edu.wpi.first.deployutils.deploy.artifact;
 
 import javax.inject.Inject;
 
-import org.gradle.api.Project;
-
 import edu.wpi.first.deployutils.deploy.CommandDeployResult;
 import edu.wpi.first.deployutils.deploy.context.DeployContext;
+import edu.wpi.first.deployutils.deploy.target.RemoteTarget;
 
 public class CommandArtifact extends AbstractArtifact {
 
@@ -13,8 +12,8 @@ public class CommandArtifact extends AbstractArtifact {
     private CommandDeployResult result = null;
 
     @Inject
-    public CommandArtifact(String name, Project project) {
-        super(name, project);
+    public CommandArtifact(String name, RemoteTarget target) {
+        super(name, target);
     }
 
     @Override
