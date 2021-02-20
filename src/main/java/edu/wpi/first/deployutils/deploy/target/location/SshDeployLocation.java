@@ -15,8 +15,8 @@ public class SshDeployLocation extends AbstractDeployLocation {
     private String password = "";
 
     @Inject
-    public SshDeployLocation(RemoteTarget target) {
-        super(target);
+    public SshDeployLocation(String name, RemoteTarget target) {
+        super(name, target);
     }
 
     public String getPassword() {

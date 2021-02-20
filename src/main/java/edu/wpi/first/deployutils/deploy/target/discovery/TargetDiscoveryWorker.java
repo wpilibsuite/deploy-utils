@@ -3,6 +3,7 @@ package edu.wpi.first.deployutils.deploy.target.discovery;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,7 +22,6 @@ import edu.wpi.first.deployutils.deploy.context.DeployContext;
 import edu.wpi.first.deployutils.deploy.target.RemoteTarget;
 import edu.wpi.first.deployutils.deploy.target.discovery.action.DiscoveryAction;
 import edu.wpi.first.deployutils.deploy.target.location.DeployLocation;
-import edu.wpi.first.deployutils.deploy.target.location.DeployLocationSet;
 import edu.wpi.first.deployutils.log.ETLogger;
 import edu.wpi.first.deployutils.log.ETLoggerFactory;
 
@@ -70,7 +70,7 @@ public abstract class TargetDiscoveryWorker implements WorkAction<TargetDiscover
     public void run(Consumer<DeployContext> callback, RemoteTarget target) {
         log = ETLoggerFactory.INSTANCE.create(this.getClass().getSimpleName() +"[" + target.getName() + "]");
 
-        DeployLocationSet locSet = target.getLocations();
+        Collection<DeployLocation> locSet = target.getLocations();
         Set<DiscoveryAction> actions = new HashSet<>(locSet.size());
         for (DeployLocation deployLocation : locSet) {
             actions.add(deployLocation.createAction());

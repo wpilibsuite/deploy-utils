@@ -21,7 +21,6 @@ import edu.wpi.first.deployutils.deploy.artifact.ArtifactDeployTask;
 import edu.wpi.first.deployutils.deploy.context.DeployContext;
 import edu.wpi.first.deployutils.deploy.target.discovery.TargetDiscoveryTask;
 import edu.wpi.first.deployutils.deploy.target.location.DeployLocation;
-import edu.wpi.first.deployutils.deploy.target.location.DeployLocationSet;
 
 public class RemoteTarget implements Named {
     private final Logger log;
@@ -31,6 +30,11 @@ public class RemoteTarget implements Named {
     private final TaskProvider<TargetDiscoveryTask> targetDiscoveryTask;
     private final Property<String> targetPlatform;
     private final ExtensiblePolymorphicDomainObjectContainer<Artifact> artifacts;
+    private final ExtensiblePolymorphicDomainObjectContainer<DeployLocation> locations;
+
+    public ExtensiblePolymorphicDomainObjectContainer<DeployLocation> getLocations() {
+        return locations;
+    }
 
     public ExtensiblePolymorphicDomainObjectContainer<Artifact> getArtifacts() {
         return artifacts;
@@ -43,7 +47,7 @@ public class RemoteTarget implements Named {
         targetPlatform = project.getObjects().property(String.class);
         artifacts = project.getObjects().polymorphicDomainObjectContainer(Artifact.class);
         this.dry = DeployUtils.isDryRun(project);
-        locations = project.getObjects().newInstance(DeployLocationSet.class, project, this);
+        locations = project.getObjects().polymorphicDomainObjectContainer(DeployLocation.class);
         log = Logger.getLogger(toString());
         deployTask = project.getTasks().register("deploy" + name, task -> {
             task.setGroup("DeployUtils");
@@ -54,7 +58,7 @@ public class RemoteTarget implements Named {
             task.setDescription("Determine the address(es) of target " + name);
             task.setTarget(this);
         });
-        de.configureArtifactTypes(artifacts, this);
+        de.configureTargetTypes(artifacts, locations, this);
     }
 
     public Property<String> getTargetPlatform() {
@@ -123,12 +127,6 @@ public class RemoteTarget implements Named {
         this.dry = dry;
     }
 
-    private final DeployLocationSet locations;
-
-    public DeployLocationSet getLocations() {
-        return locations;
-    }
-
     private Predicate<DeployContext> onlyIf = null;;
 
     public Predicate<DeployContext> getOnlyIf() {
@@ -146,10 +144,6 @@ public class RemoteTarget implements Named {
 
     public Project getProject() {
         return project;
-    }
-
-    public void locations(final Action<DomainObjectCollection<? extends DeployLocation>> action) {
-        action.execute(locations);
     }
 
     @Override

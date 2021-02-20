@@ -18,6 +18,8 @@ import edu.wpi.first.deployutils.deploy.artifact.NativeExecutableArtifact;
 import edu.wpi.first.deployutils.deploy.cache.CacheMethod;
 import edu.wpi.first.deployutils.deploy.cache.Md5SumCacheMethod;
 import edu.wpi.first.deployutils.deploy.target.RemoteTarget;
+import edu.wpi.first.deployutils.deploy.target.location.DeployLocation;
+import edu.wpi.first.deployutils.deploy.target.location.SshDeployLocation;
 
 public class DeployExtension {
     private final TaskProvider<Task> deployTask;
@@ -36,7 +38,7 @@ public class DeployExtension {
         return deployTask;
     }
 
-    public void configureArtifactTypes(ExtensiblePolymorphicDomainObjectContainer<Artifact> artifacts, RemoteTarget target) {
+    public void configureTargetTypes(ExtensiblePolymorphicDomainObjectContainer<Artifact> artifacts, ExtensiblePolymorphicDomainObjectContainer<DeployLocation> locations, RemoteTarget target) {
         ObjectFactory objects = target.getProject().getObjects();
         artifacts.registerFactory(NativeExecutableArtifact.class, name -> {
             var art = objects.newInstance(NativeExecutableArtifact.class, name, target);
@@ -52,6 +54,11 @@ public class DeployExtension {
             var art = objects.newInstance(JavaArtifact.class, name, target);
             art.getCacheMethod().set(cache.getByName("md5sum"));
             return art;
+        });
+
+
+        locations.registerFactory(SshDeployLocation.class, name -> {
+            return objects.newInstance(SshDeployLocation.class, name, target);
         });
     }
 
