@@ -26,11 +26,11 @@ public class NativeExecutableArtifact extends AbstractArtifact implements Cachea
         super(name, target);
         libraryDirectory = target.getProject().getObjects().property(String.class);
         filename = target.getProject().getObjects().property(String.class);
-        executable = target.getProject().getObjects().property(NativeExecutableBinarySpec.class);
+        binarySpec = target.getProject().getObjects().property(NativeExecutableBinarySpec.class);
         cacheMethod = target.getProject().getObjects().property(CacheMethod.class);
 
         installTaskProvider = target.getProject().getProviders().provider(() -> {
-            return (InstallExecutable)executable.get().getTasks().getInstall();
+            return (InstallExecutable)binarySpec.get().getTasks().getInstall();
         });
 
         dependsOn(installTaskProvider);
@@ -50,10 +50,10 @@ public class NativeExecutableArtifact extends AbstractArtifact implements Cachea
         return filename;
     }
 
-    private Property<NativeExecutableBinarySpec> executable;
+    private Property<NativeExecutableBinarySpec> binarySpec;
 
-    public Property<NativeExecutableBinarySpec> getExecutable() {
-        return executable;
+    public Property<NativeExecutableBinarySpec> getBinary() {
+        return binarySpec;
     }
 
     public boolean isDeployLibraries() {
@@ -81,13 +81,13 @@ public class NativeExecutableArtifact extends AbstractArtifact implements Cachea
     }
 
     protected File getDeployedFile() {
-        InstallExecutable install = (InstallExecutable)executable.get().getTasks().getInstall();
+        InstallExecutable install = (InstallExecutable)binarySpec.get().getTasks().getInstall();
         return install.getExecutableFile().get().getAsFile();
     }
 
     @Override
     public void deploy(DeployContext context) {
-        InstallExecutable install = (InstallExecutable)executable.get().getTasks().getInstall();
+        InstallExecutable install = (InstallExecutable)binarySpec.get().getTasks().getInstall();
 
         CacheMethod cm = cacheMethod.getOrElse(null);
 
