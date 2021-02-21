@@ -12,18 +12,26 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.diagnostics.TaskReportTask;
 
+import edu.wpi.first.deployutils.deploy.artifact.ActionArtifact;
 import edu.wpi.first.deployutils.deploy.artifact.Artifact;
 import edu.wpi.first.deployutils.deploy.artifact.CacheableArtifact;
+import edu.wpi.first.deployutils.deploy.artifact.CommandArtifact;
 import edu.wpi.first.deployutils.deploy.artifact.FileArtifact;
+import edu.wpi.first.deployutils.deploy.artifact.FileCollectionArtifact;
+import edu.wpi.first.deployutils.deploy.artifact.FileTreeArtifact;
 import edu.wpi.first.deployutils.deploy.artifact.JavaArtifact;
+import edu.wpi.first.deployutils.deploy.artifact.MavenArtifact;
+import edu.wpi.first.deployutils.deploy.artifact.MultiCommandArtifact;
 import edu.wpi.first.deployutils.deploy.artifact.NativeExecutableArtifact;
 import edu.wpi.first.deployutils.deploy.cache.CacheMethod;
+import edu.wpi.first.deployutils.deploy.cache.Md5FileCacheMethod;
 import edu.wpi.first.deployutils.deploy.cache.Md5SumCacheMethod;
 import edu.wpi.first.deployutils.deploy.target.RemoteTarget;
 import edu.wpi.first.deployutils.deploy.target.location.DeployLocation;
 import edu.wpi.first.deployutils.deploy.target.location.SshDeployLocation;
 
 public class DeployExtension {
+
     private final TaskProvider<Task> deployTask;
     private final ExtensiblePolymorphicDomainObjectContainer<RemoteTarget> targets;
     private final ExtensiblePolymorphicDomainObjectContainer<CacheMethod> cache;
@@ -40,25 +48,22 @@ public class DeployExtension {
         return deployTask;
     }
 
-    public void configureTargetTypes(ExtensiblePolymorphicDomainObjectContainer<Artifact> artifacts, ExtensiblePolymorphicDomainObjectContainer<DeployLocation> locations, RemoteTarget target) {
+    private void configureTargetTypes(RemoteTarget target) {
         ObjectFactory objects = target.getProject().getObjects();
-        artifacts.registerFactory(NativeExecutableArtifact.class, name -> {
-            var art = objects.newInstance(NativeExecutableArtifact.class, name, target);
-            return art;
-        });
-        artifacts.registerFactory(FileArtifact.class, name -> {
-            var art = objects.newInstance(FileArtifact.class, name, target);
-            return art;
-        });
-        artifacts.registerFactory(JavaArtifact.class, name -> {
-            var art = objects.newInstance(JavaArtifact.class, name, target);
-            return art;
-        });
+        ExtensiblePolymorphicDomainObjectContainer<DeployLocation> locations = target.getLocations();
+        ExtensiblePolymorphicDomainObjectContainer<Artifact> artifacts = target.getArtifacts();
 
+        NamedObjectFactory.registerType(NativeExecutableArtifact.class, artifacts, target, objects);
+        NamedObjectFactory.registerType(FileArtifact.class, artifacts, target, objects);
+        NamedObjectFactory.registerType(JavaArtifact.class, artifacts, target, objects);
+        NamedObjectFactory.registerType(ActionArtifact.class, artifacts, target, objects);
+        NamedObjectFactory.registerType(FileCollectionArtifact.class, artifacts, target, objects);
+        NamedObjectFactory.registerType(FileTreeArtifact.class, artifacts, target, objects);
+        NamedObjectFactory.registerType(MavenArtifact.class, artifacts, target, objects);
+        NamedObjectFactory.registerType(MultiCommandArtifact.class, artifacts, target, objects);
+        NamedObjectFactory.registerType(CommandArtifact.class, artifacts, target, objects);
 
-        locations.registerFactory(SshDeployLocation.class, name -> {
-            return objects.newInstance(SshDeployLocation.class, name, target);
-        });
+        NamedObjectFactory.registerType(SshDeployLocation.class, locations, target, objects);
     }
 
     @Inject
@@ -71,6 +76,10 @@ public class DeployExtension {
             return objects.newInstance(Md5SumCacheMethod.class, name);
         });
 
+        cache.registerFactory(Md5FileCacheMethod.class, name -> {
+            return objects.newInstance(Md5FileCacheMethod.class, name);
+        });
+
         cache.register("md5sum", Md5SumCacheMethod.class);
 
         targets.registerFactory(RemoteTarget.class, name -> {
@@ -81,6 +90,7 @@ public class DeployExtension {
         // Without this, any registered tasks will crash when deploy is called
         // Also resolve all inner artifacts for same reason
         targets.all(x -> {
+            configureTargetTypes(x);
             x.getArtifacts().all(y -> {
                 if (y instanceof CacheableArtifact) {
                     Property<CacheMethod> cm = ((CacheableArtifact)y).getCacheMethod();

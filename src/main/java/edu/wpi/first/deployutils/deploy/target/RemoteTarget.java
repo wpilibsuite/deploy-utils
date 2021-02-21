@@ -5,8 +5,6 @@ import java.util.function.Predicate;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
-import org.gradle.api.Action;
-import org.gradle.api.DomainObjectCollection;
 import org.gradle.api.ExtensiblePolymorphicDomainObjectContainer;
 import org.gradle.api.Named;
 import org.gradle.api.Project;
@@ -17,7 +15,6 @@ import org.gradle.api.tasks.TaskProvider;
 import edu.wpi.first.deployutils.DeployUtils;
 import edu.wpi.first.deployutils.deploy.DeployExtension;
 import edu.wpi.first.deployutils.deploy.artifact.Artifact;
-import edu.wpi.first.deployutils.deploy.artifact.ArtifactDeployTask;
 import edu.wpi.first.deployutils.deploy.context.DeployContext;
 import edu.wpi.first.deployutils.deploy.target.discovery.TargetDiscoveryTask;
 import edu.wpi.first.deployutils.deploy.target.location.DeployLocation;
@@ -58,7 +55,6 @@ public class RemoteTarget implements Named {
             task.setDescription("Determine the address(es) of target " + name);
             task.setTarget(this);
         });
-        de.configureTargetTypes(artifacts, locations, this);
     }
 
     public Property<String> getTargetPlatform() {
