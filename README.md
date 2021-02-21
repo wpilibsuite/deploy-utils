@@ -1,10 +1,11 @@
 DeployUtils
 ====
-Compile and Deploy for Embedded Targets in both Java and C++.
+Deploy to Embedded Targets in both Java and C++.
 
-DeployUtils adds compiler and library rules to make writing native software easier.
 For all projects, you can define deployment targets and artifacts. The deploy process works over SSH/SFTP and
 is extremely quick.
+
+For the previous functionality for native library building, see edu.wpi.first.NativeUtils
 
 Commands:
 `gradlew deploy` will deploy all artifacts
@@ -18,132 +19,111 @@ Properties:
 Include the following in your `build.gradle`
 ```gradle
 plugins {
-    id "jaci.gradle.DeployUtils" version "<latest version>"
+    id "edu.wpi.first.DeployUtils" version "<latest version>"
 }
 ```
 
-See [https://plugins.gradle.org/plugin/jaci.gradle.DeployUtils](https://plugins.gradle.org/plugin/jaci.gradle.DeployUtils) for the latest version
+See [https://plugins.gradle.org/plugin/edu.wpi.first.DeployUtils](https://plugins.gradle.org/plugin/edu.first.wpi.DeployUtils) for the latest version
 
 ## Spec
 
 ```gradle
-import edu.wpi.first.deployutils.toolchains.*
-import edu.wpi.first.deployutils.nativedeps.*
+import edu.wpi.first.deployutils.deploy.target.RemoteTarget
+import edu.wpi.first.deployutils.deploy.artifact.*
+import edu.wpi.first.deployutils.deploy.target.location.SshDeployLocation
 
 // DSL (all properties optional unless stated as required)
 deploy {
     targets {
-        target('myTarget') {
+        myTarget(RemoteTarget) { // name is first, in paranthesis is type
             directory = '/home/myuser'  // The root directory to start deploying to. Default: user home
             maxChannels = 1         // The number of channels to open on the target (how many files / commands to run at the same time). Default: 1
             timeout = 3             // Timeout to use when connecting to target. Default: 3 (seconds)
             failOnMissing = true    // Should the build fail if the target can't be found? Default: true
 
             locations {
-                ssh {
+                ssh(SshDeployLocation) {
                     address = "mytarget.local"  // Required. The address to try
                     user = 'myuser'             // Required. The user to login as
                     password = ''               // The password for the user. Default: blank (empty) string
                     ipv6 = false                // Are IPv6 addresses permitted? Default: false
                 }
             }
+
+            // Artifacts are specific per target
+            artifacts {
+                // COMMON PROPERTIES FOR ALL ARTIFACTS //
+                all {
+                    directory = 'mydir'                     // Subdirectory to use. Relative to target directory
+
+                    onlyIf = { execute('echo Hi').result == 'Hi' }   // Check closure for artifact. Will not deploy if evaluates to false
+
+                    predeploy << { execute 'echo Pre' }      // After onlyIf, but before deploy logic
+                    postdeploy << { execute 'echo Post' }    // After this artifact's deploy logic
+
+                    disabled = true                         // Disable this artifact. Default: false.
+
+                    dependsOn('someTask')                   // Make this artifact depend on a task
+                }
+                // END COMMON //
+
+                myFileArtifact(FileArtifact) {
+                    file = file('myFile')               // Set the file to deploy. Required.
+                    filename = 'myFile.dat'             // Set the filename to deploy to. Default: same name as file
+                }
+
+                // FileCollectionArtifact is a flat collection of files - directory structure is not preserved
+                myFileCollectionArtifact(FileCollectionArtifact) {
+                    files = fileTree(dir: 'myDir')      // Required. Set the filecollection (e.g. filetree, files, etc) to deploy
+                }
+
+                // FileTreeArtifact is like a FileCollectionArtifact, but the directory structure is preserved
+                myFileTreeArtifact(FileTreeArtifact) {
+                    files = fileTree(dir: 'mydir')      // Required. Set the fileTree (e.g. filetree, ziptree) to deploy
+                }
+
+                myCommandArtifact(CommandArtifact) {
+                    command = 'echo Hello'              // The command to run. Required.
+                    // Output will be stored in 'result' after execution
+                }
+
+                // JavaArtifact inherits from FileArtifact
+                myJavaArtifact(JavaArtifact) {
+                    jarTask = jar                         // The Jar task to deploy.
+                    // Note: There is no default artifact
+                }
+
+                myNativeArtifact(NativeExecutableArtifact) {
+                    // The binary to deploy is not configured by default. To configure,
+                    // assign the exectuable property to the binary you want to run.
+                    // See below for how to do this.
+                    // High level plugins can provide an easier way to do this.
+                }
+
+                // // NativeLibraryArtifact inherits from FileCollectionArtifact
+                // nativeLibraryArtifact('myNativeLibraryArtifact') {
+                //     library = 'mylib'                   // Required. Name of library (model.libraries {}) to deploy.
+                //     targetPlatform = 'desktop'          // The name of the native platform (model.platforms {}) to deploy.
+                //     flavor = 'myFlavor'                 // The name of the flavor (model.flavors {}) to deploy.
+                //     buildType = 'myBuildType'           // The name of the buildType (model.buildTypes {}) to deploy.
+                // }
+            }
         }
     }
 
-    artifacts {
-        // COMMON PROPERTIES FOR ALL ARTIFACTS //
-        all {
-            directory = 'mydir'                     // Subdirectory to use. Relative to target directory
-            targets << 'myTarget'                   // Targets to deploy to
-
-            onlyIf = { execute('echo Hi').result == 'Hi' }   // Check closure for artifact. Will not deploy if evaluates to false
-
-            predeploy << { execute 'echo Pre' }      // After onlyIf, but before deploy logic
-            postdeploy << { execute 'echo Post' }    // After this artifact's deploy logic
-
-            disabled = true                         // Disable this artifact. Default: false.
-
-            dependsOn('someTask')                   // Make this artifact depend on a task
-        }
-        // END COMMON //
-
-        fileArtifact('myFileArtifact') {
-            file = file('myFile')               // Set the file to deploy. Required.
-            filename = 'myFile.dat'             // Set the filename to deploy to. Default: same name as file
-        }
-
-        // FileCollectionArtifact is a flat collection of files - directory structure is not preserved
-        fileCollectionArtifact('myFileCollectionArtifact') {
-            files = fileTree(dir: 'myDir')      // Required. Set the filecollection (e.g. filetree, files, etc) to deploy
-        }
-
-        // FileTreeArtifact is like a FileCollectionArtifact, but the directory structure is preserved
-        fileTreeArtifact('myFileTreeArtifact') {
-            files = fileTree(dir: 'mydir')      // Required. Set the fileTree (e.g. filetree, ziptree) to deploy
-        }
-
-        commandArtifact('myCommandArtifact') {
-            command = 'echo Hello'              // The command to run. Required.
-            // Output will be stored in 'result' after execution
-        }
-
-        // JavaArtifact inherits from FileArtifact
-        javaArtifact('myJavaArtifact') {
-            jar = 'jar'                         // The jar (or Jar task) to deploy. Default: 'jar'
-            // Note: This artifact will automatically depend on the jar build task
-        }
-
-        // NativeArtifact inherits from FileArtifact
-        nativeArtifact('myNativeArtifact') {
-            component = 'my_program'            // Required. The name of the native component (model.components {}) to deploy.
-            targetPlatform = 'desktop'          // The name of the native platform (model.platforms {}) to deploy.
-
-            // Note: This artifact will automatically depend on the native component link task
-        }
-
-        // NativeLibraryArtifact inherits from FileCollectionArtifact
-        nativeLibraryArtifact('myNativeLibraryArtifact') {
-            library = 'mylib'                   // Required. Name of library (model.libraries {}) to deploy.
-            targetPlatform = 'desktop'          // The name of the native platform (model.platforms {}) to deploy.
-            flavor = 'myFlavor'                 // The name of the flavor (model.flavors {}) to deploy.
-            buildType = 'myBuildType'           // The name of the buildType (model.buildTypes {}) to deploy.
-        }
     }
 }
 
 model {
-    libraries {
-        // COMMON PROPERTIES FOR ALL LIBRARIES //
-        all {
-            libraryName = 'myactuallib'     // The name to give this library in useLibrary and when referencing from other places.
-            targetPlatform = 'desktop'      // The name of the native platform (model.platforms {}) this lib is built for
-            targetPlatforms = ['desktop1', 'desktop2']  // Same as targetPlatform, but for multiple platforms.
-            flavor = 'myFlavor'             // The name of the flavor (model.flavors {}) this lib is for
-            buildType = 'myBuildType'       // The name of the buildType (model.buildTypes {}) this lib is for
-        }
-        // END COMMON
-
-        mylib(NativeLib) {
-            headerDirs << 'include'                         // Directories for headers
-            sourceDirs << 'sources'                         // Directories for sources
-            staticMatchers << '**/*.a'                      // Static Libraries to be linked at compile time
-            sharedMatchers << '**/*.so'                     // Shared Libraries to be linked at compile time
-            dynamicMatchers << '**/*.so'                    // Libraries that aren't linked, but still needed at runtime.
-            systemLibs << 'm'                               // System libs to load with -l (provided by toolchain)
-
-            maven = "some.maven.package:mylib:1.0.0@zip"    // Load from maven. Must be a zip or zip-compatible (like a jar)
-            file = project.file("mylib.zip")                // Load from filesystem instead. Can be given a zip or a directory.
-        }
-
-        // You can create a collection of libraries using CombinedNativeLib
-        myComboLib(CombinedNativeLib) {
-            libs << 'myactuallib' << 'someotherlib'
-        }
-    }
-
     components {
         my_program(NativeExecutableSpec) {
-            deployUtils.useLibrary(it, "myComboLib")
+            binaries.all {
+                // Filter to binary you want to deploy here.
+                // For instace
+                if (it.targetPlatform.name == 'SomeCrossBuild' && it.buildType.name == 'debug') {
+                    deploy.targets.myTarget.artifacts.myNativeArtifact.executable = it
+                }
+            }
         }
     }
 }

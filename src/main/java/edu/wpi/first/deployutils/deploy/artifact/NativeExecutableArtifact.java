@@ -1,11 +1,9 @@
 package edu.wpi.first.deployutils.deploy.artifact;
 
 import java.io.File;
-import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
-import org.gradle.api.Task;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.util.PatternFilterable;
