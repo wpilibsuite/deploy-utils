@@ -11,19 +11,25 @@ repositories {
         url "https://plugins.gradle.org/m2/"
     }
     mavenLocal()
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
     api 'com.jcraft:jsch:0.1.55'
     api 'com.google.code.gson:gson:2.8.6'
 
-    testImplementation('org.spockframework:spock-core:1.2-groovy-2.5') {
+    testImplementation('org.spockframework:spock-core:2.0-M4-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation('cglib:cglib-nodep:2.2')
     testImplementation('org.objenesis:objenesis:1.2')
     testImplementation gradleTestKit()
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
 }
 
 buildScan {
@@ -61,6 +67,6 @@ tasks.withType(JavaCompile) {
 }
 
 wrapper {
-    gradleVersion = '6.8.1'
+    gradleVersion = '7.0'
     distributionType = Wrapper.DistributionType.BIN
 }
