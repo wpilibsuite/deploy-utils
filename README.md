@@ -121,7 +121,7 @@ model {
                 // Filter to binary you want to deploy here.
                 // For instace
                 if (it.targetPlatform.name == 'SomeCrossBuild' && it.buildType.name == 'debug') {
-                    deploy.targets.myTarget.artifacts.myNativeArtifact.executable = it
+                    deploy.targets.myTarget.artifacts.myNativeArtifact.binary = it
                 }
             }
         }

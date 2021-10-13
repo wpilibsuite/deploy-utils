@@ -39,7 +39,7 @@ buildScan {
 
 group = "edu.wpi.first"
 archivesBaseName = "DeployUtils"
-version = "2022.0.0"
+version = "2022.1.0"
 
 sourceCompatibility = 11
 targetCompatibility = 11

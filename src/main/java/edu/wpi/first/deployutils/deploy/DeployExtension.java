@@ -1,5 +1,6 @@
 package edu.wpi.first.deployutils.deploy;
 
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
@@ -29,6 +30,7 @@ import edu.wpi.first.deployutils.deploy.cache.Md5SumCacheMethod;
 import edu.wpi.first.deployutils.deploy.target.RemoteTarget;
 import edu.wpi.first.deployutils.deploy.target.location.DeployLocation;
 import edu.wpi.first.deployutils.deploy.target.location.SshDeployLocation;
+import org.gradle.api.internal.PolymorphicDomainObjectContainerInternal;
 
 public class DeployExtension {
 
@@ -42,6 +44,32 @@ public class DeployExtension {
 
     public ExtensiblePolymorphicDomainObjectContainer<CacheMethod> getCache() {
         return cache;
+    }
+
+    public Class<? extends RemoteTarget> getTargetTypeClass(String name) {
+        @SuppressWarnings("unchecked")
+        PolymorphicDomainObjectContainerInternal<RemoteTarget> internalTargets =
+            (PolymorphicDomainObjectContainerInternal<RemoteTarget>) targets;
+        Set<? extends java.lang.Class<? extends RemoteTarget>> targetTypeSet = internalTargets.getCreateableTypes();
+        for (Class<? extends RemoteTarget> targetType : targetTypeSet) {
+            if (targetType.getSimpleName().equals(name)) {
+                return targetType;
+            }
+        }
+        return null;
+    }
+
+    public Class<? extends CacheMethod> getCacheTypeClass(String name) {
+        @SuppressWarnings("unchecked")
+        PolymorphicDomainObjectContainerInternal<CacheMethod> internalCache =
+            (PolymorphicDomainObjectContainerInternal<CacheMethod>) cache;
+        Set<? extends java.lang.Class<? extends CacheMethod>> cacheTypeSet = internalCache.getCreateableTypes();
+        for (Class<? extends CacheMethod> cacheType : cacheTypeSet) {
+            if (cacheType.getSimpleName().equals(name)) {
+                return cacheType;
+            }
+        }
+        return null;
     }
 
     public TaskProvider<Task> getDeployTask() {
