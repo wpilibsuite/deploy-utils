@@ -1,5 +1,6 @@
 package edu.wpi.first.deployutils.deploy.target;
 
+import java.util.Set;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
@@ -9,6 +10,7 @@ import org.gradle.api.ExtensiblePolymorphicDomainObjectContainer;
 import org.gradle.api.Named;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.internal.PolymorphicDomainObjectContainerInternal;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.TaskProvider;
 
@@ -35,6 +37,32 @@ public class RemoteTarget implements Named {
 
     public ExtensiblePolymorphicDomainObjectContainer<Artifact> getArtifacts() {
         return artifacts;
+    }
+
+    public Class<? extends Artifact> getArtifactTypeClass(String name) {
+        @SuppressWarnings("unchecked")
+        PolymorphicDomainObjectContainerInternal<Artifact> internalArtifacts =
+            (PolymorphicDomainObjectContainerInternal<Artifact>) artifacts;
+        Set<? extends java.lang.Class<? extends Artifact>> artifactTypeSet = internalArtifacts.getCreateableTypes();
+        for (Class<? extends Artifact> artifactType : artifactTypeSet) {
+            if (artifactType.getSimpleName().equals(name)) {
+                return artifactType;
+            }
+        }
+        return null;
+    }
+
+    public Class<? extends DeployLocation> getLocationTypeClass(String name) {
+        @SuppressWarnings("unchecked")
+        PolymorphicDomainObjectContainerInternal<DeployLocation> internalLocations =
+            (PolymorphicDomainObjectContainerInternal<DeployLocation>) locations;
+        Set<? extends java.lang.Class<? extends DeployLocation>> locationTypeSet = internalLocations.getCreateableTypes();
+        for (Class<? extends DeployLocation> locationType : locationTypeSet) {
+            if (locationType.getSimpleName().equals(name)) {
+                return locationType;
+            }
+        }
+        return null;
     }
 
     @Inject
