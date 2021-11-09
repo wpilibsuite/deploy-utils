@@ -132,6 +132,10 @@ public abstract class TargetDiscoveryWorker implements WorkAction<TargetDiscover
         }
     }
 
+    private static String capitalize(String s) {
+        return s.substring(0, 1).toUpperCase() + s.substring(1);
+    }
+
     private void printFailures(List<DiscoveryFailedException> failures) {
         Map<DiscoveryState, List<DiscoveryFailedException>> enumMap = new HashMap<>();
         for (DiscoveryFailedException e : failures) {
@@ -142,41 +146,29 @@ public abstract class TargetDiscoveryWorker implements WorkAction<TargetDiscover
         }
 
         log.debug("Failures: " + enumMap);
-        // TODO lots of failures
 
-        /*
- def enumMap = new HashMap<DiscoveryState, List<DiscoveryFailedException>>()
-        // Sort failures into state buckets
-        failures.each { DiscoveryFailedException e ->
-            if (!enumMap.containsKey(e.action.state))
-                enumMap.put(e.action.state, [] as List)
-            enumMap.get(e.action.state).add(e)
-        }
-
-        log.debug("Failures: ${enumMap}")
-        // Sort and iterate by state priority
-        def sorted = enumMap.keySet().sort { a -> -a.priority }
-        int printFullPriority = sorted.first().priority
-
-        sorted.each { DiscoveryState state ->
-            List<DiscoveryFailedException> fails = enumMap[state]
-            if (state.priority == printFullPriority || log.backingLogger().isInfoEnabled()){
-                fails.each { DiscoveryFailedException failed ->
-                    log.logErrorHead("${failed.action.deployLocation.friendlyString()}: ${state.stateLocalized.capitalize()}.")
-                    log.push().with {
-                        logError("Reason: ${failed.cause.class.simpleName}")
-                        logError(failed.cause.message)
-                    }
+        boolean isFirst = true;
+        int printFullPriority = 0;
+        for (DiscoveryState state : (Iterable<DiscoveryState>)enumMap.keySet().stream().sorted((a,b) -> b.getPriority() - a.getPriority())::iterator) {
+            if (isFirst) {
+                isFirst = false;
+                printFullPriority = state.getPriority();
+            }
+            List<DiscoveryFailedException> fails = enumMap.get(state);
+            if (state.getPriority() == printFullPriority || log.backingLogger().isInfoEnabled()) {
+                for (DiscoveryFailedException failed : fails) {
+                    log.logErrorHead(failed.getAction().getDeployLocation().friendlyString() + ": " + capitalize(state.getStateLocalized()) + ".");
+                    log.push().withLock(c -> {
+                        c.logError("Reason: " + failed.getCause().getClass().getSimpleName());
+                        c.logError(failed.getCause().getMessage());
+                    });
                 }
             } else {
-                log.logErrorHead("${fails.size()} other action(s) ${state.stateLocalized}.")
+                log.logErrorHead(fails.size() + " other action(s) " + state.getStateLocalized() + ".");
             }
         }
 
-        log.log("Run with --info for more details")
-
-        log.log("") // blank line
-
-        */
+        log.log("Run with --info for more details");
+        log.log("");
     }
 }
