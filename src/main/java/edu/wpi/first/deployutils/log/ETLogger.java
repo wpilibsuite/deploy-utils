@@ -2,7 +2,8 @@ package edu.wpi.first.deployutils.log;
 
 import java.util.concurrent.Semaphore;
 import org.gradle.api.Action;
-import org.apache.log4j.Logger;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 import org.gradle.internal.logging.text.StyledTextOutput;
 
 public class ETLogger {
@@ -75,8 +76,7 @@ public class ETLogger {
         for (int i = 0; i < indent; i++) {
             indentStr += ' ';
         }
-        // TODO change this to use a gradle logger.
-        this.internalLogger = Logger.getLogger(name);
+        this.internalLogger = Logging.getLogger(name);
         this.colorOut = textOutput;
         this.semaphore = new Semaphore(1);
     }
