@@ -5,12 +5,13 @@ import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.Logger;
 import org.gradle.api.ExtensiblePolymorphicDomainObjectContainer;
 import org.gradle.api.Named;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.internal.PolymorphicDomainObjectContainerInternal;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.TaskProvider;
 
@@ -73,7 +74,7 @@ public class RemoteTarget implements Named {
         artifacts = project.getObjects().polymorphicDomainObjectContainer(Artifact.class);
         this.dry = DeployUtils.isDryRun(project);
         locations = project.getObjects().polymorphicDomainObjectContainer(DeployLocation.class);
-        log = Logger.getLogger(toString());
+        log = Logging.getLogger(toString());
         deployTask = project.getTasks().register("deploy" + name, task -> {
             task.setGroup("DeployUtils");
             task.setDescription("Deploy task for " + name);

@@ -1,7 +1,8 @@
 package edu.wpi.first.deployutils.deploy.cache;
 
-import org.apache.log4j.Logger;
 import org.codehaus.groovy.runtime.EncodingGroovyMethods;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 
 import edu.wpi.first.deployutils.deploy.context.DeployContext;
 import edu.wpi.first.deployutils.log.ETLogger;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 public class Md5SumCacheMethod extends AbstractCacheMethod {
-    private Logger log = Logger.getLogger(Md5SumCacheMethod.class);
+    private Logger log = Logging.getLogger(Md5SumCacheMethod.class);
     private int csI = 0;
 
     @Inject
