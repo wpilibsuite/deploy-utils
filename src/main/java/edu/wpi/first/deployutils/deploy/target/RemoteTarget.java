@@ -83,6 +83,8 @@ public class RemoteTarget implements Named {
             task.setGroup("DeployUtils");
             task.setDescription("Determine the address(es) of target " + name);
             task.setTarget(this);
+            task.getBuildFinishedService().set(de.getFinishedServiceProvider());
+            task.usesService(de.getFinishedServiceProvider());
         });
     }
 

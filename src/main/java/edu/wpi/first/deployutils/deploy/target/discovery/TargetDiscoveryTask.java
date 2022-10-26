@@ -6,24 +6,25 @@ import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.workers.WorkerExecutor;
 
+import edu.wpi.first.deployutils.deploy.BuildFinishedService;
 import edu.wpi.first.deployutils.deploy.context.DeployContext;
 import edu.wpi.first.deployutils.deploy.target.RemoteTarget;
 import edu.wpi.first.deployutils.log.ETLogger;
 import edu.wpi.first.deployutils.log.ETLoggerFactory;
 
-public class TargetDiscoveryTask extends DefaultTask implements Consumer<DeployContext> {
-
-    private final WorkerExecutor workerExecutor;
+public abstract class TargetDiscoveryTask extends DefaultTask implements Consumer<DeployContext> {
 
     @Internal
-    public final WorkerExecutor getWorkerExecutor() {
-        return workerExecutor;
-    }
+    public abstract Property<BuildFinishedService> getBuildFinishedService();
+
+    @Internal
+    abstract WorkerExecutor getWorkerExecutor();
 
     private DeployContext activeContext;
 
@@ -40,8 +41,7 @@ public class TargetDiscoveryTask extends DefaultTask implements Consumer<DeployC
 
 
     @Inject
-    public TargetDiscoveryTask(WorkerExecutor workerExecutor) {
-        this.workerExecutor = workerExecutor;
+    public TargetDiscoveryTask() {
     }
 
     @Internal
@@ -65,6 +65,7 @@ public class TargetDiscoveryTask extends DefaultTask implements Consumer<DeployC
 
     @TaskAction
     public void discoverTarget() {
+        getBuildFinishedService().get();
         ETLogger log = ETLoggerFactory.INSTANCE.create("TargetDiscoveryTask[" + target.getName() + "]");
 
         log.log("Discovering Target " + target.getName());
@@ -74,7 +75,7 @@ public class TargetDiscoveryTask extends DefaultTask implements Consumer<DeployC
         // same time. Inside the worker we split off into a threadpool so we can introduce
         // our own timeout logic.
         log.debug("Submitting worker ${hashcode}...");
-        workerExecutor.noIsolation().submit(TargetDiscoveryWorker.class, config -> {
+        getWorkerExecutor().noIsolation().submit(TargetDiscoveryWorker.class, config -> {
             config.getIndex().set(hashcode);
         });
         log.debug("Submitted!");

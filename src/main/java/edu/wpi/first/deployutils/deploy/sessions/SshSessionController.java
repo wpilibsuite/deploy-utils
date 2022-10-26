@@ -105,13 +105,6 @@ public class SshSessionController extends AbstractSessionController implements I
     }
 
     @Override
-    public void finalize() {
-        try {
-            session.disconnect();
-        } catch (Exception e) { }
-    }
-
-    @Override
     public void close() throws IOException {
         try {
             session.disconnect();
