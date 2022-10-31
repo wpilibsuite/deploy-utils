@@ -13,10 +13,12 @@ import org.gradle.api.internal.PolymorphicDomainObjectContainerInternal;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskProvider;
 
 import edu.wpi.first.deployutils.DeployUtils;
 import edu.wpi.first.deployutils.deploy.DeployExtension;
+import edu.wpi.first.deployutils.deploy.StorageService;
 import edu.wpi.first.deployutils.deploy.artifact.Artifact;
 import edu.wpi.first.deployutils.deploy.context.DeployContext;
 import edu.wpi.first.deployutils.deploy.target.discovery.TargetDiscoveryTask;
@@ -31,6 +33,11 @@ public class RemoteTarget implements Named {
     private final Property<String> targetPlatform;
     private final ExtensiblePolymorphicDomainObjectContainer<Artifact> artifacts;
     private final ExtensiblePolymorphicDomainObjectContainer<DeployLocation> locations;
+    private final Provider<StorageService> storageServiceProvider;
+
+    public Provider<StorageService> getStorageServiceProvider() {
+        return storageServiceProvider;
+    }
 
     public ExtensiblePolymorphicDomainObjectContainer<DeployLocation> getLocations() {
         return locations;
@@ -70,6 +77,7 @@ public class RemoteTarget implements Named {
     public RemoteTarget(String name, Project project, DeployExtension de) {
         this.name = name;
         this.project = project;
+        this.storageServiceProvider = de.getStorageServiceProvider();
         targetPlatform = project.getObjects().property(String.class);
         artifacts = project.getObjects().polymorphicDomainObjectContainer(Artifact.class);
         this.dry = DeployUtils.isDryRun(project);
@@ -83,8 +91,8 @@ public class RemoteTarget implements Named {
             task.setGroup("DeployUtils");
             task.setDescription("Determine the address(es) of target " + name);
             task.setTarget(this);
-            task.getBuildFinishedService().set(de.getFinishedServiceProvider());
-            task.usesService(de.getFinishedServiceProvider());
+            task.getStorageService().set(de.getStorageServiceProvider());
+            task.usesService(de.getStorageServiceProvider());
         });
     }
 

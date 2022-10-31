@@ -41,6 +41,8 @@ public abstract class AbstractArtifact implements Artifact {
             task.setDescription("Deploys " + name + " to " + target.getName());
 
             task.dependsOn(target.getTargetDiscoveryTask());
+            task.getStorageService().set(target.getStorageServiceProvider());
+            task.usesService(target.getStorageServiceProvider());
         });
         target.getDeployTask().configure(x -> x.dependsOn(deployTask));
     }

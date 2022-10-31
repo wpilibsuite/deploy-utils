@@ -7,13 +7,18 @@ import javax.inject.Inject;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 
+import edu.wpi.first.deployutils.deploy.StorageService;
+
 public abstract class AbstractSessionController implements SessionController {
     private Semaphore semaphore;
     private Logger log;
     private int semI;
 
     @Inject
-    public AbstractSessionController(int maxConcurrent) {
+    public AbstractSessionController(int maxConcurrent, StorageService storage) {
+        if (storage != null) {
+            storage.addSessionForCleanup(this);
+        }
         semaphore = new Semaphore(maxConcurrent);
         semI = 0;
     }

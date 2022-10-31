@@ -18,6 +18,7 @@ import java.util.function.Consumer;
 
 import org.gradle.workers.WorkAction;
 
+import edu.wpi.first.deployutils.deploy.StorageService.DiscoveryStorage;
 import edu.wpi.first.deployutils.deploy.context.DeployContext;
 import edu.wpi.first.deployutils.deploy.target.RemoteTarget;
 import edu.wpi.first.deployutils.deploy.target.discovery.action.DiscoveryAction;
@@ -27,41 +28,11 @@ import edu.wpi.first.deployutils.log.ETLoggerFactory;
 
 public abstract class TargetDiscoveryWorker implements WorkAction<TargetDiscoveryWorkerParameters> {
 
-    private static class DiscoveryStorage {
-        public final RemoteTarget target;
-        public final Consumer<DeployContext> contextSet;
-
-        public DiscoveryStorage(RemoteTarget target, Consumer<DeployContext> context) {
-            this.target = target;
-            this.contextSet = context;
-        }
-    }
-
-    private static Map<Integer, DiscoveryStorage> storage = new HashMap<>();
-    private static int storageIndex = 0;
-
-    public static void clearStorage() {
-        storage.clear();
-        storageIndex++;
-    }
-
-    public static int submitStorage(RemoteTarget target, Consumer<DeployContext> cb) {
-        DiscoveryStorage stg = new DiscoveryStorage(target, cb);
-        int currentIndex = storageIndex;
-        storageIndex++;
-        storage.put(currentIndex, stg);
-        return currentIndex;
-    }
-
-    public static int storageCount() {
-        return storage.size();
-    }
-
     private ETLogger log;
 
     @Override
     public void execute() {
-        DiscoveryStorage lStorage = storage.remove(getParameters().getIndex().get());
+        DiscoveryStorage lStorage = getParameters().getStorageService().get().getDiscoveryStorage(getParameters().getIndex().get());
         Consumer<DeployContext> callback = lStorage.contextSet;
         RemoteTarget target = lStorage.target;
         run(callback, target);

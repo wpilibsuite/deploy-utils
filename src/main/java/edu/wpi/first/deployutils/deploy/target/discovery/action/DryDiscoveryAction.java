@@ -28,4 +28,3 @@ public class DryDiscoveryAction extends AbstractDiscoveryAction {
         return DiscoveryState.CONNECTED;
     }
 }
-

@@ -38,10 +38,10 @@ public class DeployExtension {
     private final TaskProvider<Task> deployTask;
     private final ExtensiblePolymorphicDomainObjectContainer<RemoteTarget> targets;
     private final ExtensiblePolymorphicDomainObjectContainer<CacheMethod> cache;
-    private final Provider<BuildFinishedService> finishedServiceProvider;
+    private final Provider<StorageService> storageServiceProvider;
 
-    public Provider<BuildFinishedService> getFinishedServiceProvider() {
-        return finishedServiceProvider;
+    public Provider<StorageService> getStorageServiceProvider() {
+        return storageServiceProvider;
     }
 
     public ExtensiblePolymorphicDomainObjectContainer<RemoteTarget> getTargets() {
@@ -103,8 +103,7 @@ public class DeployExtension {
     @Inject
     public DeployExtension(Project project, ObjectFactory objects) {
 
-        finishedServiceProvider = project.getGradle().getSharedServices().registerIfAbsent("deploypluginbuildfinished", BuildFinishedService.class, spec -> {});
-        finishedServiceProvider.get();
+        storageServiceProvider = project.getGradle().getSharedServices().registerIfAbsent("deployPluginStorageService", StorageService.class, spec -> {});
 
         targets = objects.polymorphicDomainObjectContainer(RemoteTarget.class);
         cache = objects.polymorphicDomainObjectContainer(CacheMethod.class);

@@ -12,7 +12,7 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.workers.WorkerExecutor;
 
-import edu.wpi.first.deployutils.deploy.BuildFinishedService;
+import edu.wpi.first.deployutils.deploy.StorageService;
 import edu.wpi.first.deployutils.deploy.context.DeployContext;
 import edu.wpi.first.deployutils.deploy.target.RemoteTarget;
 import edu.wpi.first.deployutils.log.ETLogger;
@@ -21,7 +21,7 @@ import edu.wpi.first.deployutils.log.ETLoggerFactory;
 public abstract class TargetDiscoveryTask extends DefaultTask implements Consumer<DeployContext> {
 
     @Internal
-    public abstract Property<BuildFinishedService> getBuildFinishedService();
+    public abstract Property<StorageService> getStorageService();
 
     @Internal
     abstract WorkerExecutor getWorkerExecutor();
@@ -65,17 +65,18 @@ public abstract class TargetDiscoveryTask extends DefaultTask implements Consume
 
     @TaskAction
     public void discoverTarget() {
-        getBuildFinishedService().get();
+        StorageService storageService = getStorageService().get();
         ETLogger log = ETLoggerFactory.INSTANCE.create("TargetDiscoveryTask[" + target.getName() + "]");
 
         log.log("Discovering Target " + target.getName());
-        int hashcode = TargetDiscoveryWorker.submitStorage(target, this);
+        int hashcode = storageService.submitDiscoveryStorage(target, this);
 
         // We use the Worker API since it allows for multiple of this task to run at the
         // same time. Inside the worker we split off into a threadpool so we can introduce
         // our own timeout logic.
         log.debug("Submitting worker ${hashcode}...");
         getWorkerExecutor().noIsolation().submit(TargetDiscoveryWorker.class, config -> {
+            config.getStorageService().set(storageService);
             config.getIndex().set(hashcode);
         });
         log.debug("Submitted!");
