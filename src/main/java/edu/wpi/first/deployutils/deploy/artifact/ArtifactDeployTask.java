@@ -45,7 +45,7 @@ public abstract class ArtifactDeployTask extends DefaultTask {
         DeployContext ctx = target.getTargetDiscoveryTask().get().getActiveContext();
         int index = storageService.submitDeployStorage(ctx, artifact);
         getWorkerExecutor().noIsolation().submit(ArtifactDeployWorker.class, config -> {
-            config.getStorageService().set(storageService);
+            config.getStorageService().set(getStorageService());
             config.getIndex().set(index);
         });
         log.debug("Workers submitted...");

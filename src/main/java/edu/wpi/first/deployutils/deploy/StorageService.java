@@ -38,10 +38,10 @@ public abstract class StorageService implements BuildService<BuildServiceParamet
         public final Consumer<DeployContext> contextSet;
     }
 
-    private static AtomicInteger hashIndex;
-    private static ConcurrentMap<Integer, DeployStorage> deployerStorage;
-    private static ConcurrentMap<Integer, DiscoveryStorage> discoveryStorage;
-    private static List<SessionController> sessions;
+    private final AtomicInteger hashIndex;
+    private final ConcurrentMap<Integer, DeployStorage> deployerStorage;
+    private final ConcurrentMap<Integer, DiscoveryStorage> discoveryStorage;
+    private final List<SessionController> sessions;
 
     @Inject
     public StorageService() {

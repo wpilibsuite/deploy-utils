@@ -71,7 +71,7 @@ public abstract class TargetDiscoveryTask extends DefaultTask implements Consume
         // our own timeout logic.
         log.debug("Submitting worker ${hashcode}...");
         getWorkerExecutor().noIsolation().submit(TargetDiscoveryWorker.class, config -> {
-            config.getStorageService().set(storageService);
+            config.getStorageService().set(getStorageService());
             config.getIndex().set(hashcode);
         });
         log.debug("Submitted!");
