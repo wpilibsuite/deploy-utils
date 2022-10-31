@@ -38,13 +38,17 @@ public abstract class StorageService implements BuildService<BuildServiceParamet
         public final Consumer<DeployContext> contextSet;
     }
 
-    private final AtomicInteger hashIndex = new AtomicInteger(0);
-    private final ConcurrentMap<Integer, DeployStorage> deployerStorage = new ConcurrentHashMap<>();
-    private final ConcurrentMap<Integer, DiscoveryStorage> discoveryStorage = new ConcurrentHashMap<>();
-    private final List<SessionController> sessions = Collections.synchronizedList(new ArrayList<>());
+    private static AtomicInteger hashIndex;
+    private static ConcurrentMap<Integer, DeployStorage> deployerStorage;
+    private static ConcurrentMap<Integer, DiscoveryStorage> discoveryStorage;
+    private static List<SessionController> sessions;
 
     @Inject
     public StorageService() {
+        hashIndex = new AtomicInteger(0);
+        deployerStorage = new ConcurrentHashMap<>();
+        discoveryStorage = new ConcurrentHashMap<>();
+        sessions = Collections.synchronizedList(new ArrayList<>());
     }
 
     public int submitDeployStorage(DeployContext context, Artifact artifact) {
