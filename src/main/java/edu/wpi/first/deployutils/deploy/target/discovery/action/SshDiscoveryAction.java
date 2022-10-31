@@ -50,7 +50,7 @@ public class SshDiscoveryAction extends AbstractDiscoveryAction {
         String resolvedHost = resolveHostname(hostname, location.isIpv6());
         state = DiscoveryState.RESOLVED;
 
-        SshSessionController session = new SshSessionController(resolvedHost, port, location.getUser(), location.getPassword(), target.getTimeout(), location.getTarget().getMaxChannels());
+        SshSessionController session = new SshSessionController(resolvedHost, port, location.getUser(), location.getPassword(), target.getTimeout(), location.getTarget().getMaxChannels(), getDeployLocation().getTarget().getStorageServiceProvider().get());
         session.open();
         log.info("Found " + resolvedHost + "! at " + address);
         state = DiscoveryState.CONNECTED;

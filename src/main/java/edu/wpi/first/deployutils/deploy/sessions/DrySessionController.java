@@ -4,11 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import edu.wpi.first.deployutils.deploy.CommandDeployResult;
 
 public class DrySessionController extends AbstractSessionController implements IPSessionController {
+
+    @Inject
     public DrySessionController() {
-        super(1);
+        super(1, null);
     }
 
     @Override

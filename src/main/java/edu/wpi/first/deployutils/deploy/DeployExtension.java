@@ -10,6 +10,7 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.diagnostics.TaskReportTask;
 
@@ -37,6 +38,11 @@ public class DeployExtension {
     private final TaskProvider<Task> deployTask;
     private final ExtensiblePolymorphicDomainObjectContainer<RemoteTarget> targets;
     private final ExtensiblePolymorphicDomainObjectContainer<CacheMethod> cache;
+    private final Provider<StorageService> storageServiceProvider;
+
+    public Provider<StorageService> getStorageServiceProvider() {
+        return storageServiceProvider;
+    }
 
     public ExtensiblePolymorphicDomainObjectContainer<RemoteTarget> getTargets() {
         return targets;
@@ -96,6 +102,8 @@ public class DeployExtension {
 
     @Inject
     public DeployExtension(Project project, ObjectFactory objects) {
+
+        storageServiceProvider = project.getGradle().getSharedServices().registerIfAbsent("deployPluginStorageService", StorageService.class, spec -> {});
 
         targets = objects.polymorphicDomainObjectContainer(RemoteTarget.class);
         cache = objects.polymorphicDomainObjectContainer(CacheMethod.class);

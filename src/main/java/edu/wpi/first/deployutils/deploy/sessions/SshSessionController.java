@@ -16,6 +16,7 @@ import org.codehaus.groovy.runtime.IOGroovyMethods;
 
 import edu.wpi.first.deployutils.DeployUtils;
 import edu.wpi.first.deployutils.deploy.CommandDeployResult;
+import edu.wpi.first.deployutils.deploy.StorageService;
 
 public class SshSessionController extends AbstractSessionController implements IPSessionController {
 
@@ -23,8 +24,8 @@ public class SshSessionController extends AbstractSessionController implements I
     private String host, user;
     private int port, timeout;
 
-    public SshSessionController(String host, int port, String user, String password, int timeout, int maxConcurrent) {
-        super(maxConcurrent);
+    public SshSessionController(String host, int port, String user, String password, int timeout, int maxConcurrent, StorageService storage) {
+        super(maxConcurrent, storage);
         this.host = host;
         this.port = port;
         this.user = user;
@@ -102,13 +103,6 @@ public class SshSessionController extends AbstractSessionController implements I
             throw new RuntimeException(e2);
         }
 
-    }
-
-    @Override
-    public void finalize() {
-        try {
-            session.disconnect();
-        } catch (Exception e) { }
     }
 
     @Override
