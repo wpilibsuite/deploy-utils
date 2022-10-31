@@ -23,8 +23,8 @@ public abstract class TargetDiscoveryTask extends DefaultTask implements Consume
     @Internal
     public abstract Property<StorageService> getStorageService();
 
-    @Internal
-    abstract WorkerExecutor getWorkerExecutor();
+    @Inject
+    public abstract WorkerExecutor getWorkerExecutor();
 
     private DeployContext activeContext;
 
@@ -37,11 +37,6 @@ public abstract class TargetDiscoveryTask extends DefaultTask implements Consume
     @Input
     public RemoteTarget getTarget() {
         return target;
-    }
-
-
-    @Inject
-    public TargetDiscoveryTask() {
     }
 
     @Internal
