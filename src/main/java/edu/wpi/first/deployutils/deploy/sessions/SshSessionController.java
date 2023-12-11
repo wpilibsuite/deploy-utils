@@ -131,4 +131,23 @@ public class SshSessionController extends AbstractSessionController implements I
     public int getPort() {
         return this.port;
     }
+
+    @Override
+    public void put(InputStream source, String dest) {
+        int sem = acquire();
+
+        ChannelSftp sftp;
+        try {
+            sftp = (ChannelSftp) session.openChannel("sftp");
+            sftp.connect();
+            try {
+                sftp.put(source, dest);
+            } finally {
+                sftp.disconnect();
+                release(sem);
+            }
+        } catch (JSchException | SftpException e2) {
+            throw new RuntimeException(e2);
+        }
+    }
 }

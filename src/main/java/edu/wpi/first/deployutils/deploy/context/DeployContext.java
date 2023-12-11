@@ -1,6 +1,7 @@
 package edu.wpi.first.deployutils.deploy.context;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +30,9 @@ public interface DeployContext {
 
     // Send multiple files, and trigger cache checking only once
     void put(Set<File> files, CacheMethod cache);
+
+    // Put an input stream, with no caching
+    void put(InputStream source, String dest);
 
     String friendlyString();
 

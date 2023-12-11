@@ -1,6 +1,7 @@
 package edu.wpi.first.deployutils.deploy.context;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -118,5 +119,10 @@ public class DefaultDeployContext implements DeployContext {
     @Override
     public DeployContext subContext(String workingDir) {
         return new DefaultDeployContext(session, logger.push(), deployLocation, PathUtils.combine(this.workingDir, workingDir));
+    }
+
+    @Override
+    public void put(InputStream source, String dest) {
+        session.put(source, dest);
     }
 }
