@@ -16,9 +16,17 @@ import edu.wpi.first.deployutils.deploy.target.RemoteTarget;
 public interface Artifact extends Named {
     TaskProvider<ArtifactDeployTask> getDeployTask();
 
+    TaskProvider<ArtifactDeployTask> getStandaloneDeployTask();
+
+    void allowStandaloneDeploy();
+
     RemoteTarget getTarget();
 
     void dependsOn(Object... paths);
+
+    void dependsOnForDeployTask(Object... paths);
+
+    void dependsOnForStandaloneDeployTask(Object... paths);
 
     List<Action<Artifact>> getPreWorkerThread();
 

@@ -36,6 +36,7 @@ import org.gradle.api.internal.PolymorphicDomainObjectContainerInternal;
 public class DeployExtension {
 
     private final TaskProvider<Task> deployTask;
+    private final TaskProvider<Task> standaloneDeployTask;
     private final ExtensiblePolymorphicDomainObjectContainer<RemoteTarget> targets;
     private final ExtensiblePolymorphicDomainObjectContainer<CacheMethod> cache;
     private final Provider<StorageService> storageServiceProvider;
@@ -80,6 +81,10 @@ public class DeployExtension {
 
     public TaskProvider<Task> getDeployTask() {
         return deployTask;
+    }
+
+    public TaskProvider<Task> getStandaloneDeployTask() {
+        return standaloneDeployTask;
     }
 
     private void configureTargetTypes(RemoteTarget target) {
@@ -142,6 +147,14 @@ public class DeployExtension {
             task.setDescription("Deploy all artifacts on all targets");
             targets.all(x -> {
                 task.dependsOn(x.getDeployTask());
+            });
+        });
+
+        standaloneDeployTask = project.getTasks().register("deployStandalone", task -> {
+            task.setGroup("DeployUtils");
+            task.setDescription("Deploy all artifacts on all targets");
+            targets.all(x -> {
+                task.dependsOn(x.getStandaloneDeployTask());
             });
         });
 

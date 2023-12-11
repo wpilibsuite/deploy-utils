@@ -17,6 +17,7 @@ public abstract class AbstractArtifact implements Artifact {
     private final String name;
     private final RemoteTarget target;
     private final TaskProvider<ArtifactDeployTask> deployTask;
+    private final TaskProvider<ArtifactDeployTask> standaloneDeployTask;
 
     private boolean disabled = false;
     private boolean explicit = false;
@@ -45,6 +46,27 @@ public abstract class AbstractArtifact implements Artifact {
             task.usesService(target.getStorageServiceProvider());
         });
         target.getDeployTask().configure(x -> x.dependsOn(deployTask));
+
+        standaloneDeployTask = target.getProject().getTasks().register("deployStandalone" + name + target.getName(), ArtifactDeployTask.class, task -> {
+            task.getArtifact().set(this);
+            task.getTarget().set(target);
+            task.setGroup("DeployUtils");
+            task.setDescription("Deploys " + name + " to " + target.getName() + " as Standalone");
+
+            task.dependsOn(target.getTargetDiscoveryTask());
+            task.getStorageService().set(target.getStorageServiceProvider());
+            task.usesService(target.getStorageServiceProvider());
+        });
+    }
+
+    @Override
+    public TaskProvider<ArtifactDeployTask> getStandaloneDeployTask() {
+        return deployTask;
+    }
+
+    @Override
+    public void allowStandaloneDeploy() {
+        target.getStandaloneDeployTask().configure(x -> x.dependsOn(standaloneDeployTask));
     }
 
     @Override
@@ -64,6 +86,17 @@ public abstract class AbstractArtifact implements Artifact {
 
     @Override
     public void dependsOn(Object... paths) {
+        dependsOnForDeployTask(paths);
+        dependsOnForStandaloneDeployTask(paths);
+    }
+
+    @Override
+    public void dependsOnForDeployTask(Object... paths) {
+        deployTask.configure(y -> y.dependsOn(paths));
+    }
+
+    @Override
+    public void dependsOnForStandaloneDeployTask(Object... paths) {
         deployTask.configure(y -> y.dependsOn(paths));
     }
 

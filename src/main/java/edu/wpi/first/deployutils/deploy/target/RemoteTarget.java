@@ -29,6 +29,7 @@ public class RemoteTarget implements Named {
     private final String name;
     private final Project project;
     private final TaskProvider<Task> deployTask;
+    private final TaskProvider<Task> standaloneDeployTask;
     private final TaskProvider<TargetDiscoveryTask> targetDiscoveryTask;
     private final Property<String> targetPlatform;
     private final ExtensiblePolymorphicDomainObjectContainer<Artifact> artifacts;
@@ -87,6 +88,10 @@ public class RemoteTarget implements Named {
             task.setGroup("DeployUtils");
             task.setDescription("Deploy task for " + name);
         });
+        standaloneDeployTask = project.getTasks().register("deployStandalone" + name, task -> {
+            task.setGroup("DeployUtils");
+            task.setDescription("Standalone deploy task for " + name);
+        });
         targetDiscoveryTask = project.getTasks().register("discover" + name, TargetDiscoveryTask.class, task -> {
             task.setGroup("DeployUtils");
             task.setDescription("Determine the address(es) of target " + name);
@@ -102,6 +107,10 @@ public class RemoteTarget implements Named {
 
     public TaskProvider<Task> getDeployTask() {
         return deployTask;
+    }
+
+    public TaskProvider<Task> getStandaloneDeployTask() {
+        return standaloneDeployTask;
     }
 
     public TaskProvider<TargetDiscoveryTask> getTargetDiscoveryTask() {
