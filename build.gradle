@@ -1,5 +1,5 @@
 plugins {
-    id "com.gradle.plugin-publish" version "0.15.0"
+    id "com.gradle.plugin-publish" version "1.2.1"
     id 'java-gradle-plugin'
     id 'groovy'
     id 'maven-publish'
@@ -38,25 +38,27 @@ buildScan {
 }
 
 group = "edu.wpi.first"
-archivesBaseName = "DeployUtils"
-version = "2023.0.0"
+version = "2024.0.0"
 
-sourceCompatibility = 11
-targetCompatibility = 11
+base {
+    archivesName = "DeployUtils"
+}
 
-pluginBundle {
-    website = 'https://github.com/wpilibsuite/deploy-utils'
-    vcsUrl = 'https://github.com/wpilibsuite/deploy-utils'
-    description = 'Additions to the model-based DSL for deploying Java and Native projects to remote targets'
-    tags = ['remote', 'target', 'deploy', 'java', 'native']
+java {
+    sourceCompatibility = 11
+    targetCompatibility = 11
 }
 
 gradlePlugin {
+    website = 'https://github.com/wpilibsuite/deploy-utils'
+    vcsUrl = 'https://github.com/wpilibsuite/deploy-utils'
     plugins {
         DeployUtils {
             id = 'edu.wpi.first.DeployUtils'
             displayName = 'DeployUtils'
             implementationClass = 'edu.wpi.first.deployutils.DeployUtils'
+            description = 'Additions to the model-based DSL for deploying Java and Native projects to remote targets'
+            tags = ['remote', 'target', 'deploy', 'java', 'native']
         }
     }
 }
@@ -71,6 +73,6 @@ tasks.withType(Javadoc) {
 }
 
 wrapper {
-    gradleVersion = '7.5.1'
+    gradleVersion = '8.5'
     distributionType = Wrapper.DistributionType.BIN
 }
