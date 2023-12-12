@@ -74,6 +74,21 @@ public class SshSessionController extends AbstractSessionController implements I
             try {
                 result = IOGroovyMethods.getText(is);
             } finally {
+                // Wait up to 5 seconds for closed
+                // isClosed must be true for getExecStatus to be correct.
+                long start = System.currentTimeMillis();
+                while(!exec.isClosed()) {
+                    long delta = System.currentTimeMillis() - start;
+                    if (delta > 5000) { // 5 seconds
+                        break;
+                    }
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                }
                 exec.disconnect();
                 release(sem);
             }
