@@ -1,0 +1,15 @@
+plugins {
+    id "edu.wpi.first.DeployUtils" version "2024.2.0"
+}
+
+deploy {
+    targets {
+        myTarget(getTargetTypeClass("RemoteTarget")) { 
+        }
+    }
+}
+
+wrapper {
+    gradleVersion = '8.5'
+    distributionType = Wrapper.DistributionType.BIN
+}
