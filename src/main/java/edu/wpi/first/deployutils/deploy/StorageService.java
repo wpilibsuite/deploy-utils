@@ -1,5 +1,6 @@
 package edu.wpi.first.deployutils.deploy;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
+import org.apache.sshd.client.SshClient;
 import org.gradle.api.services.BuildService;
 import org.gradle.api.services.BuildServiceParameters;
 
@@ -42,6 +44,7 @@ public abstract class StorageService implements BuildService<BuildServiceParamet
     private final ConcurrentMap<Integer, DeployStorage> deployerStorage;
     private final ConcurrentMap<Integer, DiscoveryStorage> discoveryStorage;
     private final List<SessionController> sessions;
+    private final SshClient client;
 
     @Inject
     public StorageService() {
@@ -49,6 +52,11 @@ public abstract class StorageService implements BuildService<BuildServiceParamet
         deployerStorage = new ConcurrentHashMap<>();
         discoveryStorage = new ConcurrentHashMap<>();
         sessions = Collections.synchronizedList(new ArrayList<>());
+        client = SshClient.setUpDefaultClient();
+    }
+
+    public SshClient getSshClient() {
+        return client;
     }
 
     public int submitDeployStorage(DeployContext context, Artifact artifact) {
@@ -88,5 +96,9 @@ public abstract class StorageService implements BuildService<BuildServiceParamet
             }
         }
         sessions.clear();
+        try {
+            client.close();
+        } catch (IOException e) {
+        }
     }
 }

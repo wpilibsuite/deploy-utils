@@ -1,5 +1,6 @@
 package edu.wpi.first.deployutils.deploy.target.discovery.action;
 
+import java.io.IOException;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -50,8 +51,13 @@ public class SshDiscoveryAction extends AbstractDiscoveryAction {
         String resolvedHost = resolveHostname(hostname, location.isIpv6());
         state = DiscoveryState.RESOLVED;
 
-        SshSessionController session = new SshSessionController(resolvedHost, port, location.getUser(), location.getPassword(), target.getTimeout(), location.getTarget().getMaxChannels(), getDeployLocation().getTarget().getStorageServiceProvider().get());
-        session.open();
+        SshSessionController session;
+        try {
+            session = new SshSessionController(resolvedHost, port, location);//location.getUser(), location.getPassword(), target.getTimeout(), location.getTarget().getMaxChannels(), getDeployLocation().getTarget().getStorageServiceProvider().get());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         log.info("Found " + resolvedHost + "! at " + address);
         state = DiscoveryState.CONNECTED;
 

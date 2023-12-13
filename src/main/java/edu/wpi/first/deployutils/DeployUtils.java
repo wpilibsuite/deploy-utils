@@ -1,7 +1,5 @@
 package edu.wpi.first.deployutils;
 
-import com.jcraft.jsch.JSch;
-
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
@@ -16,12 +14,6 @@ public class DeployUtils implements Plugin<Project> {
         ETLoggerFactory.INSTANCE.addColorOutput(project);
 
         project.getPluginManager().apply(DeployPlugin.class);
-    }
-
-    private static JSch jsch;
-    public static JSch getJsch() {
-        if (jsch == null) jsch = new JSch();
-        return jsch;
     }
 
     public static boolean isDryRun(Project project) {

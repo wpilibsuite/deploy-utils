@@ -7,8 +7,6 @@ import java.util.Map;
 import edu.wpi.first.deployutils.deploy.CommandDeployResult;
 
 public interface SessionController extends AutoCloseable {
-    void open();
-
     CommandDeployResult execute(String command);
 
     void put(Map<String, File> files);
