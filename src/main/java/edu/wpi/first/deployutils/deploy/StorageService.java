@@ -53,6 +53,7 @@ public abstract class StorageService implements BuildService<BuildServiceParamet
         discoveryStorage = new ConcurrentHashMap<>();
         sessions = Collections.synchronizedList(new ArrayList<>());
         client = SshClient.setUpDefaultClient();
+        client.start();
     }
 
     public SshClient getSshClient() {

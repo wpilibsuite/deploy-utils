@@ -20,6 +20,7 @@ dependencies {
 
     api 'org.apache.sshd:sshd-core:2.11.0'
     api 'org.apache.sshd:sshd-sftp:2.11.0'
+    implementation 'net.i2p.crypto:eddsa:0.3.0'
 
     testImplementation('org.spockframework:spock-core:2.0-M4-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
@@ -41,7 +42,7 @@ buildScan {
 }
 
 group = "edu.wpi.first"
-version = "2024.1.0"
+version = "2024.2.0"
 
 base {
     archivesName = "DeployUtils"
