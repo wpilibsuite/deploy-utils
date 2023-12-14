@@ -42,7 +42,7 @@ public class SshSessionController extends AbstractSessionController implements I
         StorageService storage = location.getTarget().getStorageServiceProvider().get();
 
         getLogger().info("Connecting to session (timeout=" + timeout + ")");
-        
+
         ClientSession localSession = null;
         try {
             localSession = storage.getSshClient().connect(user, host, port).verify(timeout * 1000).getSession();
@@ -66,46 +66,7 @@ public class SshSessionController extends AbstractSessionController implements I
         }
 
         getLogger().info("Connected!");
-
-        // try {
-        //     this.session = DeployUtils.getJsch().getSession(user, host, port);
-        // } catch (JSchException e) {
-        //     throw new RuntimeException(e);
-        // }
-        // this.session.setPassword(password);
-
-        // Properties config = new Properties();
-        // config.put("StrictHostKeyChecking", "no");
-        // config.put("PreferredAuthentications", "password");
-        // this.session.setConfig(config);
     }
-
-    // @Override
-    // public void open() throws IOException {
-    //     getLogger().info("Connecting to session (timeout=" + timeout + ")");
-        
-    //     ClientSession session = null;
-    //     try {
-    //         session = client.connect(user, host, port).verify(timeout * 1000).getSession();
-    //         session.auth().verify(timeout * 1000);
-    //         session.setSessionHeartbeat(HeartbeatType.IGNORE, Duration.ofMillis(1000));
-    //         this.session = session;
-    //         session = null;
-    //     } finally {
-    //         if (session != null) {
-    //             session.close();
-    //         }
-    //     }
-
-    //     // try {
-    //     //     session.setTimeout(timeout * 1000);
-    //     //     session.connect(timeout * 1000);
-    //     // } catch (JSchException e) {
-    //     //     throw new RuntimeException(e);
-    //     // }
-
-    //     getLogger().info("Connected!");
-    // }
 
     private CommandDeployResult executeInternal(String command) throws IOException {
         int sem = acquire();
@@ -146,31 +107,11 @@ public class SshSessionController extends AbstractSessionController implements I
         } finally {
             release(sem);
         }
-
-        // ChannelSftp sftp;
-        // try {
-        //     sftp = (ChannelSftp) session.openChannel("sftp");
-        //     sftp.connect();
-        //     try {
-        //         for (Map.Entry<String, File> file : files.entrySet()) {
-        //             sftp.put(file.getValue().getAbsolutePath(), file.getKey());
-        //         }
-        //     } finally {
-        //         sftp.disconnect();
-        //         release(sem);
-        //     }
-        // } catch (JSchException | SftpException e2) {
-        //     throw new RuntimeException(e2);
-        // }
-
     }
 
     @Override
     public void close() throws IOException {
         session.close();
-        // try {
-        //     session.disconnect();
-        // } catch (Exception e) { }
     }
 
     @Override
@@ -203,23 +144,6 @@ public class SshSessionController extends AbstractSessionController implements I
         } finally {
             release(sem);
         }
-
-
-        // int sem = acquire();
-
-        // ChannelSftp sftp;
-        // try {
-        //     sftp = (ChannelSftp) session.openChannel("sftp");
-        //     sftp.connect();
-        //     try {
-        //         sftp.put(source, dest);
-        //     } finally {
-        //         sftp.disconnect();
-        //         release(sem);
-        //     }
-        // } catch (JSchException | SftpException e2) {
-        //     throw new RuntimeException(e2);
-        // }
     }
 
     @Override
