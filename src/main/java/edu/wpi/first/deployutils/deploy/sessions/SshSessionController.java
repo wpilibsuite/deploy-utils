@@ -16,7 +16,6 @@ import java.util.Optional;
 import org.apache.sshd.client.channel.ClientChannel;
 import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
-import org.apache.sshd.common.session.SessionHeartbeatController.HeartbeatType;
 import org.apache.sshd.common.util.io.output.NullOutputStream;
 import org.apache.sshd.sftp.client.SftpClient;
 import org.apache.sshd.sftp.client.SftpClientFactory;
@@ -56,7 +55,6 @@ public class SshSessionController extends AbstractSessionController implements I
                 }
             }
             localSession.auth().verify(timeout * 1000);
-            localSession.setSessionHeartbeat(HeartbeatType.IGNORE, Duration.ofMillis(1000));
             this.session = localSession;
             localSession = null;
         } finally {
