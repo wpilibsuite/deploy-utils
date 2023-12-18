@@ -14,10 +14,7 @@ public class DrySessionController extends AbstractSessionController implements I
     @Inject
     public DrySessionController() {
         super(1, null);
-    }
 
-    @Override
-    public void open() {
         getLogger().info("DrySessionController opening");
     }
 

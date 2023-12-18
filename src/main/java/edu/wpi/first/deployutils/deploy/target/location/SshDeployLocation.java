@@ -1,6 +1,11 @@
 package edu.wpi.first.deployutils.deploy.target.location;
 
+import java.util.Optional;
+
 import javax.inject.Inject;
+
+import org.apache.sshd.client.session.ClientSession;
+import org.gradle.api.Action;
 
 import edu.wpi.first.deployutils.deploy.target.RemoteTarget;
 import edu.wpi.first.deployutils.deploy.target.discovery.action.DiscoveryAction;
@@ -13,6 +18,16 @@ public class SshDeployLocation extends AbstractDeployLocation {
 
     private String user = null;
     private String password = "";
+
+    private Optional<Action<ClientSession>> clientSessionConfiguration = Optional.empty();
+
+    public Optional<Action<ClientSession>> getClientSessionConfiguration() {
+        return clientSessionConfiguration;
+    }
+
+    public void setClientSessionConfiguration(Action<ClientSession> clientSessionConfiguration) {
+        this.clientSessionConfiguration = Optional.ofNullable(clientSessionConfiguration);
+    }
 
     @Inject
     public SshDeployLocation(String name, RemoteTarget target) {
