@@ -20,7 +20,6 @@ public abstract class AbstractArtifact implements Artifact {
     private final TaskProvider<ArtifactDeployTask> standaloneDeployTask;
 
     private boolean disabled = false;
-    private boolean explicit = false;
 
     private final Property<String> directory;
     private final List<Action<DeployContext>> predeploy = new WrappedArrayList<>();
@@ -158,16 +157,6 @@ public abstract class AbstractArtifact implements Artifact {
 
     public void setDisabled(boolean state) {
         this.disabled = state;
-    }
-
-    @Override
-    public boolean isExplicit() {
-        return this.explicit;
-    }
-
-    @Override
-    public void setExplicit(boolean explicit) {
-        this.explicit = explicit;
     }
 
     @Override

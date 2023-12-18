@@ -45,9 +45,6 @@ public interface Artifact extends Named {
 
     void deploy(DeployContext context);
 
-    boolean isExplicit();
-    void setExplicit(boolean explicit);
-
     public default ExtensionContainer getExtensionContainer() {
         if (this instanceof ExtensionAware) {
             return ((ExtensionAware)this).getExtensions();
