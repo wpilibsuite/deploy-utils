@@ -9,6 +9,7 @@ For the previous functionality for native library building, see edu.wpi.first.Na
 
 Commands:
 `gradlew deploy` will deploy all artifacts
+`gradlew deployStandalone` will deploy all artifacts marked for standalone use with `allowStandaloneDeploy`
 `gradlew deploy<artifact name><target name>` will deploy only the specified artifact to the specified target
 
 Properties:
@@ -28,21 +29,18 @@ See [https://plugins.gradle.org/plugin/edu.wpi.first.DeployUtils](https://plugin
 ## Spec
 
 ```gradle
-import edu.wpi.first.deployutils.deploy.target.RemoteTarget
-import edu.wpi.first.deployutils.deploy.artifact.*
-import edu.wpi.first.deployutils.deploy.target.location.SshDeployLocation
 
 // DSL (all properties optional unless stated as required)
 deploy {
     targets {
-        myTarget(RemoteTarget) { // name is first, in paranthesis is type
+        myTarget(getTargetTypeClass('RemoteTarget')) { // name is first, parameter to getTargetTypeClass is type
             directory = '/home/myuser'  // The root directory to start deploying to. Default: user home
             maxChannels = 1         // The number of channels to open on the target (how many files / commands to run at the same time). Default: 1
             timeout = 3             // Timeout to use when connecting to target. Default: 3 (seconds)
             failOnMissing = true    // Should the build fail if the target can't be found? Default: true
 
             locations {
-                ssh(SshDeployLocation) {
+                ssh(getLocationTypeClass('SshDeployLocation')) {
                     address = "mytarget.local"  // Required. The address to try
                     user = 'myuser'             // Required. The user to login as
                     password = ''               // The password for the user. Default: blank (empty) string
@@ -63,57 +61,57 @@ deploy {
 
                     disabled = true                         // Disable this artifact. Default: false.
 
-                    dependsOn('someTask')                   // Make this artifact depend on a task
+                    dependsOn('someTask')                   // Make this artifact depend on a task, both standalone and main deploy tasks
+
+                    dependsOnForDeployTask('someTask')      // Make main artifact deploy task only depend on task
+
+                    dependsOnForStandaloneDeployTask('someTask')    // Make standalone artifact deploy task only depend on task
                 }
                 // END COMMON //
 
-                myFileArtifact(FileArtifact) {
+                myFileArtifact(getArtifactTypeClass('FileArtifact)) {
                     file = file('myFile')               // Set the file to deploy. Required.
                     filename = 'myFile.dat'             // Set the filename to deploy to. Default: same name as file
                 }
 
                 // FileCollectionArtifact is a flat collection of files - directory structure is not preserved
-                myFileCollectionArtifact(FileCollectionArtifact) {
+                myFileCollectionArtifact(getArtifactTypeClass('FileCollectionArtifact)) {
                     files = fileTree(dir: 'myDir')      // Required. Set the filecollection (e.g. filetree, files, etc) to deploy
                 }
 
                 // FileTreeArtifact is like a FileCollectionArtifact, but the directory structure is preserved
-                myFileTreeArtifact(FileTreeArtifact) {
+                myFileTreeArtifact(getArtifactTypeClass('FileTreeArtifact)) {
                     files = fileTree(dir: 'mydir')      // Required. Set the fileTree (e.g. filetree, ziptree) to deploy
                 }
 
-                myCommandArtifact(CommandArtifact) {
+                myCommandArtifact(getArtifactTypeClass('CommandArtifact)) {
                     command = 'echo Hello'              // The command to run. Required.
                     // Output will be stored in 'result' after execution
                 }
 
                 // JavaArtifact inherits from FileArtifact
-                myJavaArtifact(JavaArtifact) {
-                    jarTask = jar                         // The Jar task to deploy.
-                    // Note: There is no default artifact
-                }
-
-                myNativeArtifact(NativeExecutableArtifact) {
+                myJavaArtifact(getArtifactTypeClass('JavaArtifact)) {
                     // The binary to deploy is not configured by default. To configure,
                     // assign the exectuable property to the binary you want to run.
                     // See below for how to do this.
                     // High level plugins can provide an easier way to do this.
                 }
 
-                // // NativeLibraryArtifact inherits from FileCollectionArtifact
-                // nativeLibraryArtifact('myNativeLibraryArtifact') {
-                //     library = 'mylib'                   // Required. Name of library (model.libraries {}) to deploy.
-                //     targetPlatform = 'desktop'          // The name of the native platform (model.platforms {}) to deploy.
-                //     flavor = 'myFlavor'                 // The name of the flavor (model.flavors {}) to deploy.
-                //     buildType = 'myBuildType'           // The name of the buildType (model.buildTypes {}) to deploy.
-                // }
+                myNativeArtifact(getArtifactTypeClass('NativeExecutableArtifact)) {
+                    // The binary to deploy is not configured by default. To configure,
+                    // assign the exectuable property to the binary you want to run.
+                    // See below for how to do this.
+                    // High level plugins can provide an easier way to do this.
+                }
             }
         }
     }
-
-    }
 }
 
+// For Java
+deploy.targets.myTarget.artifacts.myJavaArtifact.jarTask = jar // Assuming you have a standard 'java' plugin
+
+// For Native Code
 model {
     components {
         my_program(NativeExecutableSpec) {
