@@ -28,6 +28,8 @@ public class RemoteTarget implements Named {
     private final Logger log;
     private final String name;
     private final Project project;
+    private final TaskProvider<ListTypeClassesTask> listTypeClassesTask;
+
     private final TaskProvider<Task> deployTask;
     private final TaskProvider<Task> standaloneDeployTask;
     private final TaskProvider<TargetDiscoveryTask> targetDiscoveryTask;
@@ -99,6 +101,16 @@ public class RemoteTarget implements Named {
             task.getStorageService().set(de.getStorageServiceProvider());
             task.usesService(de.getStorageServiceProvider());
         });
+        listTypeClassesTask = project.getTasks().register("listTypeClasses" + name, ListTypeClassesTask.class, task -> {
+            task.setGroup("DeployUtils");
+            task.setDescription("Lists all type classes for a target");
+            task.setTarget(this);
+        });
+        de.getListTypeClassesTask().configure(x -> x.dependsOn(listTypeClassesTask));
+    }
+
+    public TaskProvider<ListTypeClassesTask> getListTypeClassesTask() {
+        return listTypeClassesTask;
     }
 
     public Property<String> getTargetPlatform() {

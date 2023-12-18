@@ -37,9 +37,15 @@ public class DeployExtension {
 
     private final TaskProvider<Task> deployTask;
     private final TaskProvider<Task> standaloneDeployTask;
+    private final TaskProvider<ListBaseTypeClassesTask> listTypeClassesTask;
+
     private final ExtensiblePolymorphicDomainObjectContainer<RemoteTarget> targets;
     private final ExtensiblePolymorphicDomainObjectContainer<CacheMethod> cache;
     private final Provider<StorageService> storageServiceProvider;
+
+    public TaskProvider<ListBaseTypeClassesTask> getListTypeClassesTask() {
+        return listTypeClassesTask;
+    }
 
     public Provider<StorageService> getStorageServiceProvider() {
         return storageServiceProvider;
@@ -156,6 +162,12 @@ public class DeployExtension {
             targets.all(x -> {
                 task.dependsOn(x.getStandaloneDeployTask());
             });
+        });
+
+        listTypeClassesTask = project.getTasks().register("listTypeClasses", ListBaseTypeClassesTask.class, task -> {
+            task.setGroup("DeployUtils");
+            task.setDescription("Lists all type classes for targets and cache methods");
+            task.setExtension(this);
         });
 
         project.getTasks().withType(TaskReportTask.class).configureEach(t -> {
