@@ -38,7 +38,7 @@ buildScan {
 }
 
 group = "edu.wpi.first"
-version = "2024.2.0"
+version = "2024.3.0"
 
 base {
     archivesName = "DeployUtils"
