@@ -69,35 +69,35 @@ deploy {
                 }
                 // END COMMON //
 
-                myFileArtifact(getArtifactTypeClass('FileArtifact)) {
+                myFileArtifact(getArtifactTypeClass('FileArtifact')) {
                     file = file('myFile')               // Set the file to deploy. Required.
                     filename = 'myFile.dat'             // Set the filename to deploy to. Default: same name as file
                 }
 
                 // FileCollectionArtifact is a flat collection of files - directory structure is not preserved
-                myFileCollectionArtifact(getArtifactTypeClass('FileCollectionArtifact)) {
+                myFileCollectionArtifact(getArtifactTypeClass('FileCollectionArtifact')) {
                     files = fileTree(dir: 'myDir')      // Required. Set the filecollection (e.g. filetree, files, etc) to deploy
                 }
 
                 // FileTreeArtifact is like a FileCollectionArtifact, but the directory structure is preserved
-                myFileTreeArtifact(getArtifactTypeClass('FileTreeArtifact)) {
+                myFileTreeArtifact(getArtifactTypeClass('FileTreeArtifact')) {
                     files = fileTree(dir: 'mydir')      // Required. Set the fileTree (e.g. filetree, ziptree) to deploy
                 }
 
-                myCommandArtifact(getArtifactTypeClass('CommandArtifact)) {
+                myCommandArtifact(getArtifactTypeClass('CommandArtifact')) {
                     command = 'echo Hello'              // The command to run. Required.
                     // Output will be stored in 'result' after execution
                 }
 
                 // JavaArtifact inherits from FileArtifact
-                myJavaArtifact(getArtifactTypeClass('JavaArtifact)) {
+                myJavaArtifact(getArtifactTypeClass('JavaArtifact')) {
                     // The binary to deploy is not configured by default. To configure,
                     // assign the exectuable property to the binary you want to run.
                     // See below for how to do this.
                     // High level plugins can provide an easier way to do this.
                 }
 
-                myNativeArtifact(getArtifactTypeClass('NativeExecutableArtifact)) {
+                myNativeArtifact(getArtifactTypeClass('NativeExecutableArtifact')) {
                     // The binary to deploy is not configured by default. To configure,
                     // assign the exectuable property to the binary you want to run.
                     // See below for how to do this.
