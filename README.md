@@ -69,7 +69,7 @@ deploy {
                 }
                 // END COMMON //
 
-                myFileArtifact(getArtifactTypeClass('FileArtifact)) {
+                myFileArtifact(getArtifactTypeClass('FileArtifact')) {
                     file = file('myFile')               // Set the file to deploy. Required.
                     filename = 'myFile.dat'             // Set the filename to deploy to. Default: same name as file
                 }
