@@ -12,7 +12,8 @@ jobs:
     - uses: actions/checkout@v4
     - uses: actions/setup-java@v4
       with:
-        java-version: 11
+        distribution: 'temurin'
+        java-version: 17
     - name: Build
       run: ./gradlew build -PRunToolchainTests
     - name: Publish
@@ -30,7 +31,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
-          java-version: 11
+          distribution: 'temurin'
+          java-version: 17
       - name: Publish
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         run: ./gradlew publishToMavenLocal
