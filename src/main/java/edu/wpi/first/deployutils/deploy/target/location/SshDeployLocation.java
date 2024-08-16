@@ -9,6 +9,7 @@ import org.gradle.api.Action;
 
 import edu.wpi.first.deployutils.deploy.target.RemoteTarget;
 import edu.wpi.first.deployutils.deploy.target.discovery.action.DiscoveryAction;
+import edu.wpi.first.deployutils.deploy.target.discovery.action.DryDiscoveryAction;
 import edu.wpi.first.deployutils.deploy.target.discovery.action.SshDiscoveryAction;
 
 public class SshDeployLocation extends AbstractDeployLocation {
@@ -70,6 +71,9 @@ public class SshDeployLocation extends AbstractDeployLocation {
     public DiscoveryAction createAction() {
         if (address == null || user == null) {
             throw new IllegalArgumentException("Address and User must not be null for SshDeployLocation");
+        }
+        if (getTarget().isDry()) {
+            return new DryDiscoveryAction(this);
         }
         return new SshDiscoveryAction(this);
     }
