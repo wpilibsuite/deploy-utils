@@ -72,6 +72,7 @@ public class FileTreeArtifact extends AbstractArtifact implements CacheableArtif
                 String existingFilesString = context.execute("find . -type f -print0").getResult();
 
                 Stream<String> toRemoveFiles = Arrays.stream(existingFilesString.split("\0"))
+                    .filter(x -> x.startsWith("./"))
                     .map(x -> x.substring(2))
                     .filter(x -> !f.containsKey(x));
 
