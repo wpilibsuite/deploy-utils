@@ -18,6 +18,10 @@ dependencies {
     api 'com.jcraft:jsch:0.1.55'
     api 'com.google.code.gson:gson:2.8.6'
 
+    api 'org.apache.sshd:sshd-core:2.13.2'
+    api 'org.apache.sshd:sshd-sftp:2.13.2'
+    implementation 'net.i2p.crypto:eddsa:0.3.0'
+
     testImplementation('org.spockframework:spock-core:2.0-M4-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
