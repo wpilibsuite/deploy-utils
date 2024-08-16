@@ -3,6 +3,7 @@ package edu.wpi.first.deployutils.deploy.sessions;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -48,5 +49,9 @@ public class DrySessionController extends AbstractSessionController implements I
 
     @Override
     public void put(InputStream source, String dest) {
+    }
+
+    @Override
+    public void delete(List<String> files) {
     }
 }

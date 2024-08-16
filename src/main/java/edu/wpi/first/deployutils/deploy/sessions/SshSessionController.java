@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -91,7 +92,6 @@ public class SshSessionController extends AbstractSessionController implements I
         }
     }
 
-
     private void putInternal(Map<String, File> files) throws IOException {
         int sem = acquire();
 
@@ -100,6 +100,18 @@ public class SshSessionController extends AbstractSessionController implements I
                 try (var remoteFile = sftp.write(file.getKey())) {
                     Files.copy(file.getValue().toPath(), remoteFile);
                 }
+            }
+        } finally {
+            release(sem);
+        }
+    }
+
+    private void deleteInternal(List<String> files) throws IOException {
+        int sem = acquire();
+
+        try (SftpClient sftp = SftpClientFactory.instance().createSftpClient(session)) {
+            for (String file : files) {
+                sftp.remove(file);
             }
         } finally {
             release(sem);
@@ -135,6 +147,7 @@ public class SshSessionController extends AbstractSessionController implements I
         int sem = acquire();
 
         try (SftpClient sftp = SftpClientFactory.instance().createSftpClient(session)) {
+            sftp.remove(dest);
             try (var remoteFile = sftp.write(dest)) {
                 source.transferTo(remoteFile);
             }
@@ -165,6 +178,18 @@ public class SshSessionController extends AbstractSessionController implements I
     public void put(InputStream source, String dest) {
         try {
             putInternal(source, dest);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void delete(List<String> files) {
+        if (files.isEmpty()) {
+            return;
+        }
+        try {
+            deleteInternal(files);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

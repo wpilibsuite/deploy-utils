@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import edu.wpi.first.deployutils.deploy.CommandDeployResult;
 import edu.wpi.first.deployutils.deploy.cache.CacheMethod;
@@ -33,6 +34,8 @@ public interface DeployContext {
 
     // Put an input stream, with no caching
     void put(InputStream source, String dest);
+
+    void delete(Stream<String> files);
 
     String friendlyString();
 
