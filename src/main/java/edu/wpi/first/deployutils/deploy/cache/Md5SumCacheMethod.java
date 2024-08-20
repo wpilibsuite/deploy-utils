@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -85,9 +84,7 @@ public class Md5SumCacheMethod extends AbstractCacheMethod {
             log.debug(localChecksums);
         }
 
-        String tmpFileName = "_tmp" + UUID.randomUUID().toString().toLowerCase().replace("-", "") + ".et.md5";
-
-        String result = context.execute("echo '" + localChecksums + "' > " + tmpFileName + " && md5sum -c " + tmpFileName + " 2> /dev/null; rm " + tmpFileName).getResult();
+        String result = context.execute("echo '" + localChecksums + "' | md5sum -c 2> /dev/null").getResult();
 
         if (log.isDebugEnabled()) {
             log.debug("Remote Checksums " + cs + ":");
