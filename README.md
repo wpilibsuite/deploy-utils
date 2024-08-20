@@ -82,6 +82,7 @@ deploy {
                 // FileTreeArtifact is like a FileCollectionArtifact, but the directory structure is preserved
                 myFileTreeArtifact(getArtifactTypeClass('FileTreeArtifact)) {
                     files = fileTree(dir: 'mydir')      // Required. Set the fileTree (e.g. filetree, ziptree) to deploy
+                    deleteOldFiles = false              // Set to true to delete old files in the remote deploy directory
                 }
 
                 myCommandArtifact(getArtifactTypeClass('CommandArtifact)) {

@@ -3,9 +3,11 @@ package edu.wpi.first.deployutils.deploy.context;
 import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -124,5 +126,17 @@ public class DefaultDeployContext implements DeployContext {
     @Override
     public void put(InputStream source, String dest) {
         session.put(source, dest);
+    }
+
+    @Override
+    public void delete(Stream<String> files) {
+        List<String> entries = files.map(x -> {
+            logger.log("  -D-> " + x + " @ " + workingDir);
+            return PathUtils.combine(workingDir, x);
+        }).collect(Collectors.toList());
+        session.delete(entries);
+        if (!entries.isEmpty()) {
+            logger.log("  " + entries.size() + " file(s) were deleted");
+        }
     }
 }
