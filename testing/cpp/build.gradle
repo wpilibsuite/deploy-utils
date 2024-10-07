@@ -10,6 +10,6 @@ deploy {
 }
 
 wrapper {
-    gradleVersion = '8.5'
+    gradleVersion = '8.10.2'
     distributionType = Wrapper.DistributionType.BIN
 }
