@@ -1,5 +1,5 @@
 plugins {
-    id "edu.wpi.first.DeployUtils" version "2025.1.0"
+    id "edu.wpi.first.DeployUtils" version "2025.2.0"
 }
 
 deploy {

@@ -147,7 +147,6 @@ public class SshSessionController extends AbstractSessionController implements I
         int sem = acquire();
 
         try (SftpClient sftp = SftpClientFactory.instance().createSftpClient(session)) {
-            sftp.remove(dest);
             try (var remoteFile = sftp.write(dest)) {
                 source.transferTo(remoteFile);
             }
