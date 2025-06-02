@@ -125,7 +125,7 @@ public class SshSessionController extends AbstractSessionController implements I
 
     @Override
     public String friendlyString() {
-        return user + "@" + host + ":" + port;
+        return user + "@" + getHost() + ":" + getPort();
     }
 
     @Override
