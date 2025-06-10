@@ -80,7 +80,7 @@ public class SshDeployLocation extends AbstractDeployLocation {
 
     @Override
     public String friendlyString() {
-        return user + " @ " + address;
+        return getUser() + " @ " + getAddress();
     }
 
     @Override
